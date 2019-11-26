@@ -7,3 +7,4 @@ const schema = new mongoose.Schema({
 });
 
 module.exports.schema = mongoose.model(COUNTRIES_COLLECTION, schema);
+module.exports.name = COUNTRIES_COLLECTION;

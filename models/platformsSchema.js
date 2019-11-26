@@ -7,3 +7,4 @@ const schema = new mongoose.Schema({
 });
 
 module.exports.schema = mongoose.model(PLATFORMS_COLLECTION, schema);
+module.exports.name = PLATFORMS_COLLECTION;

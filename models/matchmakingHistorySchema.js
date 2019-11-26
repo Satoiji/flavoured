@@ -10,3 +10,4 @@ const schema = new mongoose.Schema({
 });
 
 module.exports.schema = mongoose.model(MATCHMAKING_HISTORY_COLLECTION, schema);
+module.exports.name = MATCHMAKING_HISTORY_COLLECTION;

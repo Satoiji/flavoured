@@ -17,13 +17,13 @@ function gitpull(){
     });
 }
 
-function gitpush(request,response){
+function gitpush(){
     var phpScriptPath = "php/push.php";
     runner.exec("php " + phpScriptPath, function(err, phpResponse, stderr){
         if(err) console.log(err); /* log error */
         console.log( phpResponse );
     });
-    
+
 }
 
 module.exports = {

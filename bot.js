@@ -24,6 +24,13 @@ var bot = new Discord.Client({
 });
 
 const FUNCTION = 0;
+const USERS_COLLECTION = "users";
+const COUNTRIES_COLLECTION = "countries";
+const DECLARE_MATCHES_COLLECTION = "declare_matches";
+const MATCHMAKING_COLLECTION = "matchmaking";
+const PLATFORMS_COLLECTION = "platforms";
+const PLAYERS_COLLECTION = "players";
+const ROLES_COLLECTION = "roles";
 
 //regPlayer constants
 const PREFIX_REGISTER_PLAYER = "regPlayer";

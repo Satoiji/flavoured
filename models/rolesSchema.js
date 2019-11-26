@@ -7,3 +7,4 @@ const schema = new mongoose.Schema({
 });
 
 module.exports.schema = mongoose.model(ROLES_COLLECTION, schema);
+module.exports.name = ROLES_COLLECTION;

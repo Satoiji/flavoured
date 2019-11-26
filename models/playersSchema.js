@@ -15,3 +15,4 @@ const schema = new mongoose.Schema({
 });
 
 module.exports.schema = mongoose.model(PLAYERS_COLLECTION, schema);
+module.exports.name = PLAYERS_COLLECTION;

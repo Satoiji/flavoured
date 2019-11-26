@@ -9,3 +9,4 @@ const schema = new mongoose.Schema({
 });
 
 module.exports.schema = mongoose.model(USERS_COLLECTION, schema);
+module.exports.name = USERS_COLLECTION;

@@ -8,3 +8,4 @@ const schema = new mongoose.Schema({
 });
 
 module.exports.schema = mongoose.model(MATCHMAKING_COLLECTION, schema);
+module.exports.name = MATCHMAKING_COLLECTION;
