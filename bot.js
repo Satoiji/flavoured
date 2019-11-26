@@ -148,7 +148,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                 var V = v + 300*((1-win) - 1/(1 + Math.pow(10,(-(v-p)/1000)))) + (1-win)*TB2;
                                 bot.sendMessage({
                                     to: channelID,
-                                    message: "New p: " + Math.floor(P) + "\nNew v: " + Math.floor(V)
+                                    message: "Old p: " + p + "New p: " + Math.floor(P) + "\nOld v: " + v + " New v: " + Math.floor(V)
                                 });
                             }
                         break;
