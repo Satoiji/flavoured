@@ -138,12 +138,19 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                             var v = Number.parseFloat (params[2]);
                             TB2 = v < 2000 ? 100 : 0;
                             var win = Number.parseFloat (params[3]);
-                            var P = p + 300*(win - 1/(1 + Math.pow(10,(-(p-v)/1000)))) + (win)*TB1;
-                            var V = v + 300*((1-win) - 1/(1 + Math.pow(10,(-(v-p)/1000)))) + (1-win)*TB2;
-                            bot.sendMessage({
-                                to: channelID,
-                                message: "New p: " + Math.floor(P) + "\nNew v: " + Math.floor(V)
-                            });
+                            if(win != 0 || win != 1){
+                                bot.sendMessage({
+                                    to: channelID,
+                                    message: "Stop breaking my bot"
+                                });
+                            } else {
+                                var P = p + 300*(win - 1/(1 + Math.pow(10,(-(p-v)/1000)))) + (win)*TB1;
+                                var V = v + 300*((1-win) - 1/(1 + Math.pow(10,(-(v-p)/1000)))) + (1-win)*TB2;
+                                bot.sendMessage({
+                                    to: channelID,
+                                    message: "New p: " + Math.floor(P) + "\nNew v: " + Math.floor(V)
+                                });
+                            }
                         break;
                         case PREFIX_REGISTER:
                             syntax = "--register {@mention} {role}";
