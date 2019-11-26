@@ -1,6 +1,6 @@
 <?php 
 exec("cd ../");
 exec("git pull");  
-echo "Pull from github";
+echo "Pull from github" >> pull.log; 
 
 ?>

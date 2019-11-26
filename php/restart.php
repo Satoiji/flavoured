@@ -1,6 +1,6 @@
 <?php 
 exec("cd ../");
 exec("npm start");  
-echo "Restarting node server";
+echo "Restarting bot" >> restart.log;
 
 ?>
