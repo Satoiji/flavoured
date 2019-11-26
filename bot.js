@@ -142,7 +142,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                             var Nnum2 = num2 + 300*((1-win) - 1/(1 + Math.pow(10,((num1 - num2)/1000)))) + (1-win)*TB2;
                             bot.sendMessage({
                                 to: channelID,
-                                message: "Test - New num1: " + Math.floor(Nnum1) + "\nNew num2: " + Math.floor(Nnum2)
+                                message: "New num1: " + Math.floor(Nnum1) + "\nNew num2: " + Math.floor(Nnum2)
                             });
                         break;
                         case PREFIX_REGISTER:
