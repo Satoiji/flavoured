@@ -143,7 +143,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                 var V = v + 300*((1-win) - 1/(1 + Math.pow(10,(-(v-p)/1000)))) + (1-win)*TB2;
                                 bot.sendMessage({
                                     to: channelID,
-                                    message: "Old p: " + p + " - New p: " + Math.floor(P) + "\nOld v: " + v + " - New v: " + Math.floor(V)
+                                    message: "Old p: " + p + " - New p: " + Math.round(P) + "\nOld v: " + v + " - New v: " + Math.round(V)
                                 });
                             } else {
                                 bot.sendMessage({
@@ -371,8 +371,6 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                             PLAYERS_MODEL.find({$or: 
                                                 [{'discord_id': match.player1.discord_id}, {'discord_id': match.player2.discord_id}]}, 
                                                 function(err,players){
-                                                    //Satoiji vs VC
-                                                    //Satoiji win
                                                 var isPlayer1 = match.player1.discord_id == evt.d.mentions[0].id;
                                                 var p = isPlayer1 ? match.player1.elo2_temp : match.player2.elo2_temp;
                                                 var v = isPlayer1 ? match.player2.elo2_temp : match.player1.elo2_temp;
