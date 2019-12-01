@@ -544,22 +544,21 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                         break;
                         case PREFIX_PROFILE:
                             syntax = "--profile [@player]";
-                            var query = {};
                             if(evt.d.mentions.length > 0){
-                                query = {
-                                    "discord_id": evt.d.mentions[0].id
-                                }
+                                PLAYERS_MODEL.find({"discord_id": evt.d.mentions[0].id}, function(err, pl){
+                                    if(!err){
+                                    if(pl){
+                                        message += "- Discord: '" + pl.tag /*+ "' | Country: '" + pl.country.name */+ "' | elo: '" + pl.elo + "\n";
+                                    } throwExistMessage(channelID, "player", false); } throwErrorMessage(channelID);
+                                });
                             } else {
-                                query = {
-                                    "discord_id": userID
-                                }
+                                PLAYERS_MODEL.find({"discord_id": userID}, function(err, pl){
+                                    if(!err){
+                                    if(pl){
+                                        message += "- Discord: '" + pl.tag /*+ "' | Country: '" + pl.country.name */+ "' | elo: '" + pl.elo + "\n";
+                                    } throwExistMessage(channelID, "player", false); } throwErrorMessage(channelID);
+                                });
                             }
-                            PLAYERS_MODEL.find(query, function(err, pl){
-                                if(!err){
-                                if(pl){
-                                    message += "- Discord: '" + pl.tag /*+ "' | Country: '" + pl.country.name */+ "' | elo: '" + pl.elo + "\n";
-                                } throwExistMessage(channelID, "player", false); } throwErrorMessage(channelID);
-                            })
                         break;
 
                         case PREFIX_LIST:
