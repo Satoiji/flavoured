@@ -388,7 +388,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                     to: channelID,
                                     message: filt
                                 });
-                                PLAYERS_MODEL.findOne({"discord_id": ""+evt.d.mentions[0].id}, function(err,c){
+                                PLAYERS_MODEL.findOne({'discord_id': evt.d.mentions[0].id}, function(err,c){
                                     if(!err){
                                     if(p){
                                         MATCHMAKING_MODEL.findOne({$and: 
