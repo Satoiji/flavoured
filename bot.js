@@ -619,7 +619,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                             });
                                         break;
                                         case PLAYERS_COLLECTION:/*.populate("country").populate("platform").exec(function(err, objects){*/
-                                            let objects = await heavyLoad(message); /*, function(err, objects){*/
+                                            let objects = heavyLoad(message); /*, function(err, objects){*/
                                                 bot.sendMessage({
                                                     to:channelID,
                                                     message: objects
@@ -705,15 +705,15 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 });
 
 async function heavyLoad(message){
-    PLAYERS_MODEL.find().exec(function(err, objects){
-        message += "List of registered players for URM\n";
-        if(objects.length == 0) message = "The collection is empty.";
-        else {
-            objects.forEach(function(document){
-                message += "- Discord: '" + document.tag /*+ "' | Country: '" + document.country.name */+ "' | elo: '" + document.elo + "\n";
-            });
-        }
-        message += "";
-    });
+    let objects = await PLAYERS_MODEL.find();/*.exec(await function(err, objects){*/
+    message += "List of registered players for URM\n";
+    if(objects.length == 0) message = "The collection is empty.";
+    else {
+        objects.forEach(function(document){
+            message += "- Discord: '" + document.tag /*+ "' | Country: '" + document.country.name */+ "' | elo: '" + document.elo + "\n";
+        });
+    }
+    message += "";
+    //});
     return message;
 }
