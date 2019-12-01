@@ -69,6 +69,8 @@ const PREFIX_ACCEPT_MATCH = "accept";
 //list constants
 const PREFIX_LIST = "list";
 
+const PREFIX_PROFILE = "profile";
+
 //temporary constant
 const PREFIX_RATING = "rating"
 
@@ -80,13 +82,16 @@ var MIDDLEWARE = [
                         PREFIX_MATCHMAKE,
                         PREFIX_REGISTER_COUNTRY,
                         PREFIX_REGISTER_PLATFORM,
-                        PREFIX_REGISTER_PLAYER],
+                        PREFIX_REGISTER_PLAYER,
+                        PREFIX_PROFILE],
     /*matchmakers*/ [/*PREFIX_MATCH_END,    
                         PREFIX_MATCHMAKE,
-                        PREFIX_LIST*/],
+                        PREFIX_LIST,
+                        PREFIX_PROFILE*/],
     /*registers*/   [/*PREFIX_REGISTER_COUNTRY,
                         PREFIX_REGISTER_PLATFORM,
-                        PREFIX_REGISTER_PLAYER*/],
+                        PREFIX_REGISTER_PLAYER,
+                        PREFIX_PROFILE*/],
     /*owner*/       [PREFIX_MATCH_DECLARE,
                         PREFIX_RATING,
                         PREFIX_MATCH_END,
@@ -95,10 +100,12 @@ var MIDDLEWARE = [
                         PREFIX_MATCHMAKE,
                         PREFIX_REGISTER_COUNTRY,
                         PREFIX_REGISTER_PLATFORM,
-                        PREFIX_REGISTER_PLAYER],
+                        PREFIX_REGISTER_PLAYER,
+                        PREFIX_PROFILE],
     /*player*/      [PREFIX_MATCH_DECLARE, 
                         PREFIX_ACCEPT_MATCH, 
-                        PREFIX_REGISTER_PLAYER],
+                        PREFIX_REGISTER_PLAYER,
+                        PREFIX_PROFILE],
 ];
 
 function throwErrorMessage(channelID){
@@ -535,7 +542,8 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                 });
                             } else notEnoughParametersMessage(syntax,channelID);
                         break;
-                        case "profile [@player]":
+                        case PREFIX_PROFILE:
+                            syntax = "--profile [@player]";
                             var query = {};
                             if(evt.d.mentions.length > 0){
                                 query.discord_id = evt.d.mentions[0].id;
