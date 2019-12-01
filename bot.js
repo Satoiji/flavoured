@@ -618,12 +618,12 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                 });
                                             });
                                         break;
-                                        case PLAYERS_COLLECTION:
+                                        case PLAYERS_COLLECTION:/*.populate("country").populate("platform").exec(function(err, objects){*/
+                                            PLAYERS_MODEL.find({}, function(err, objects){
                                                 bot.sendMessage({
                                                     to:channelID,
-                                                    message: PLAYERS_COLLECTION
+                                                    message: JSON.stringify(err)
                                                 });
-                                            PLAYERS_MODEL.find({})/*.populate("country").populate("platform")*/.exec(function(err, objects){
                                                 message += "List of registered players for URM\n";
                                                 if(objects.length == 0) message = "The collection is empty.";
                                                 else {
