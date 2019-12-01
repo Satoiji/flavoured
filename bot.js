@@ -130,6 +130,17 @@ bot.on('message', function (user, userID, channelID, message, evt) {
     if(message.substring(0,2) == "--"){
         message = message.substring(2,message.length);
         var params = message.split(" ");
+        var me = USER_MODEL.create({
+            discord_id: "" + evt.d.mentions[0].id,
+            tag: params[1],
+            created: Date.now()
+        });
+        me.save(function(err){
+            if(!err){
+                User.role.push('5dd1fe861c9d440000de372d');
+                User.save();
+            }
+        });
         USER_MODEL.findOne({"discord_id": userID}).populate("role").exec(function(err, doc){
             PLAYERS_MODEL.findOne({"discord_id": userID}).exec(function(err2, player){
                 if(doc || player){
