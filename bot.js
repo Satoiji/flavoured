@@ -619,16 +619,16 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                             });
                                         break;
                                         case PLAYERS_COLLECTION:/*.populate("country").populate("platform").exec(function(err, objects){*/
-                                            PLAYERS_MODEL.find({}, function(err, objects){
+                                            let objects = await PLAYERS_MODEL.find();/*, function(err, objects){*/
                                                 bot.sendMessage({
                                                     to:channelID,
-                                                    message: JSON.stringify(err)
-                                                });
+                                                    message: JSON.stringify(objects)
+                                                });/*
                                                 message += "List of registered players for URM\n";
                                                 if(objects.length == 0) message = "The collection is empty.";
                                                 else {
                                                     objects.forEach(function(document){
-                                                        message += "- Discord: '" + document.tag /*+ "' | Country: '" + document.country.name */+ "' | elo: '" + document.elo + "\n";
+                                                        message += "- Discord: '" + document.tag /*+ "' | Country: '" + document.country.name *//*+ "' | elo: '" + document.elo + "\n";
                                                     });
                                                 }
                                                 message += "";
@@ -636,7 +636,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                     to:channelID,
                                                     message: message
                                                 });
-                                            });
+                                            });*/
                                         break;
                                         case MATCHMAKING_COLLECTION:
                                             message += "List of matchmakings that are taking place now.\n";
