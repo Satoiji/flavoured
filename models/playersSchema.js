@@ -9,7 +9,7 @@ const schema = new mongoose.Schema({
   created: Date,
   games_played: Number,
   wins: Number,
-  losses: Number
+  losses: Number,
   elo: Number,
   hours: Number
   last_game_date: Date
