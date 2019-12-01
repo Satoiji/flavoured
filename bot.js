@@ -383,6 +383,11 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                         case PREFIX_ACCEPT_MATCH:
                             syntax = "--accept {@challenger}";
                             if(params.length == 2){
+                                var filt = ""+evt.d.mentions[0].id;
+                                bot.sendMessage({
+                                    to: channelID,
+                                    message: filt
+                                });
                                 PLAYERS_MODEL.findOne({"discord_id": ""+evt.d.mentions[0].id}, function(err,c){
                                     if(!err){
                                     if(p){
