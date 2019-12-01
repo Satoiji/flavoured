@@ -619,20 +619,17 @@ bot.on('message', async (user, userID, channelID, message, evt) => {
                                             });
                                         break;
                                         case PLAYERS_COLLECTION:
-                                            await PLAYERS_MODEL.find({"discord_id":"code8"})/*.populate("country").populate("platform")*/.exec(function(err, objects){
-                                                message += "List of registered players for URM\n";
-                                                if(objects.length == 0) message = "The collection is empty.";
-                                                else {
-                                                    objects.forEach(function(document){
-                                                        message += "- Discord: '" + document.tag /*+ "' | Country: '" + document.country.name */+ "' | elo: '" + document.elo + "\n";
-                                                    });
-                                                }
-                                                message += "";
-                                                bot.sendMessage({
-                                                    to:channelID,
-                                                    message: message
-                                                });
+                                            /*await PLAYERS_MODEL.find({"discord_id":"code8"})/*.populate("country").populate("platform")*//*.exec(function(err, objects){*/
+                                            const cursor = PLAYERS_MODEL.find({"discord_id":"code8"}).batchSize(10000);
+                                            message += "List of registered players for URM\n";
+                                            for (let doc = await cursor.next(); doc != null; doc = await cursor.next()) {
+                                                message += "- Discord: '" + doc.tag /*+ "' | Country: '" + document.country.name */+ "' | elo: '" + doc.elo + "\n";
+                                            }
+                                            bot.sendMessage({
+                                                to:channelID,
+                                                message: message
                                             });
+                                            //});
                                         break;
                                         case MATCHMAKING_COLLECTION:
                                             message += "List of matchmakings that are taking place now.\n";
