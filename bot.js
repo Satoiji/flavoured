@@ -125,7 +125,7 @@ function throwExistMessage(channelID, collection, exists){
 
 //mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
-bot.on('message', function (user, userID, channelID, message, evt) {
+bot.on('message', async function (user, userID, channelID, message, evt) {
     var syntax = "";
     if(message.substring(0,2) == "--"){
         message = message.substring(2,message.length);
@@ -619,50 +619,11 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                             });
                                         break;
                                         case PLAYERS_COLLECTION:
-                                            /*PLAYERS_MODEL.find({})/*.populate("country").populate("platform")*//*.exec(function(err, objects){
+                                            await PLAYERS_MODEL.find({})/*.populate("country").populate("platform")*/.exec(function(err, objects){
                                                 message += "List of registered players for URM\n";
                                                 if(objects.length == 0) message = "The collection is empty.";
                                                 else {
                                                     objects.forEach(function(document){
-                                                        message += "- Discord: '" + document.tag /*+ "' | Country: '" + document.country.name *//*+ "' | elo: '" + document.elo + "\n";
-                                                    });
-                                                }
-                                                message += "";
-                                                bot.sendMessage({
-                                                    to:channelID,
-                                                    message: message
-                                                });
-                                            });*/
-                                            //Step 1: declare promise
-      
-                                           var myPromise = () => {
-                                             return new Promise((resolve, reject) => {
-                                            
-                                                PLAYERS_MODEL
-                                                 .find()
-                                                 .exec(function(err, data) {
-                                                     err 
-                                                        ? reject(err) 
-                                                        : resolve(data);
-                                                   });
-                                             });
-                                           };
-
-                                           //Step 2: async promise handler
-                                           var callMyPromise = async () => {
-                                              
-                                              var result = await (myPromise());
-                                              //anything here is executed after result is resolved
-                                              return result;
-                                           };
-                                     
-                                           //Step 3: make the call
-                                           callMyPromise().then(function(result) {
-                                              
-                                              message += "List of registered players for URM\n";
-                                                if(result.length == 0) message = "The collection is empty.";
-                                                else {
-                                                    result.forEach(function(document){
                                                         message += "- Discord: '" + document.tag /*+ "' | Country: '" + document.country.name */+ "' | elo: '" + document.elo + "\n";
                                                     });
                                                 }
@@ -671,7 +632,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                     to:channelID,
                                                     message: message
                                                 });
-                                           });
+                                            });
                                         break;
                                         case MATCHMAKING_COLLECTION:
                                             message += "List of matchmakings that are taking place now.\n";
