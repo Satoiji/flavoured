@@ -619,7 +619,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                             });
                                         break;
                                         case PLAYERS_COLLECTION:/*.populate("country").populate("platform").exec(function(err, objects){*/
-                                            let objects = await PLAYERS_MODEL.find();/*, function(err, objects){*/
+                                            let objects = PLAYERS_MODEL.find();/*, function(err, objects){*/
                                                 bot.sendMessage({
                                                     to:channelID,
                                                     message: JSON.stringify(objects)
