@@ -555,7 +555,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                         message += "- Discord: '" + pl.tag /*+ "' | Country: '" + pl.country.name */+ "' | elo: '" + pl.elo + "\n";
                                         bot.sendMessage({
                                             to: channelID,
-                                            message: JSON.stringify(err)
+                                            message: "evt"
                                         });
                                     } throwExistMessage(channelID, "player", false); } throwErrorMessage(channelID);
                                 });
@@ -566,7 +566,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                         message += "- Discord: '" + pl.tag /*+ "' | Country: '" + pl.country.name */+ "' | elo: '" + pl.elo + "\n";
                                         bot.sendMessage({
                                             to: channelID,
-                                            message: JSON.stringify(err)
+                                            message: "usr"
                                         });
                                     } throwExistMessage(channelID, "player", false); } throwErrorMessage(channelID);
                                 });
