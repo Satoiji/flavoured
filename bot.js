@@ -125,13 +125,13 @@ function throwExistMessage(channelID, collection, exists){
 
 //mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
-bot.on('message', async function (user, userID, channelID, message, evt) {
+bot.on('message', async (user, userID, channelID, message, evt) => {
     var syntax = "";
     if(message.substring(0,2) == "--"){
         message = message.substring(2,message.length);
         var params = message.split(" ");
         USER_MODEL.findOne({"discord_id": userID}).populate("role").exec(function(err, doc){
-            PLAYERS_MODEL.findOne({"discord_id": userID}).exec(function(err2, player){
+            PLAYERS_MODEL.findOne({"discord_id": userID}).exec(async function(err2, player){
                 if(doc || player){
                     var access = false;
                     doc.role.forEach(function(role){
