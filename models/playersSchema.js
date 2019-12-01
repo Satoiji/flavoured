@@ -11,7 +11,7 @@ const schema = new mongoose.Schema({
   wins: Number,
   losses: Number,
   elo: Number,
-  hours: Number
+  hours: Number,
   last_game_date: Date
 });
 
