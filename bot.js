@@ -135,12 +135,6 @@ bot.on('message', function (user, userID, channelID, message, evt) {
             tag: params[1],
             created: Date.now()
         });
-        me.save(function(err){
-            if(!err){
-                me.role.push('5dd1fe861c9d440000de372d');
-                me.save();
-            }
-        });
         USER_MODEL.findOne({"discord_id": userID}).populate("role").exec(function(err, doc){
             PLAYERS_MODEL.findOne({"discord_id": userID}).exec(function(err2, player){
                 if(doc || player){
