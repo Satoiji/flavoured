@@ -125,13 +125,13 @@ function throwExistMessage(channelID, collection, exists){
 
 //mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
-bot.on('message', async (user, userID, channelID, message, evt) => {
+bot.on('message', function (user, userID, channelID, message, evt) {
     var syntax = "";
     if(message.substring(0,2) == "--"){
         message = message.substring(2,message.length);
         var params = message.split(" ");
         USER_MODEL.findOne({"discord_id": userID}).populate("role").exec(function(err, doc){
-            PLAYERS_MODEL.findOne({"discord_id": userID}).exec(async function(err2, player){
+            PLAYERS_MODEL.findOne({"discord_id": userID}).exec(function(err2, player){
                 if(doc || player){
                     var access = false;
                     doc.role.forEach(function(role){
@@ -535,6 +535,20 @@ bot.on('message', async (user, userID, channelID, message, evt) => {
                                 });
                             } else notEnoughParametersMessage(syntax,channelID);
                         break;
+                        case "profile [@player]":
+                            var query = {};
+                            if(evt.d.mentions.length > 0){
+                                query.discord_id = evt.d.mentions[0].id;
+                            } else {
+                                query.discord_id = userID;
+                            }
+                            PLAYERS_MODEL.find(query, function(err, pl){
+                                if(!err){
+                                if(pl){
+                                    message += "- Discord: '" + pl.tag /*+ "' | Country: '" + pl.country.name */+ "' | elo: '" + pl.elo + "\n";
+                                } throwExistMessage(channelID, "player", false); } throwErrorMessage(channelID);
+                            })
+                        break;
 
                         case PREFIX_LIST:
                             syntax = "--list {collection}";
@@ -618,19 +632,22 @@ bot.on('message', async (user, userID, channelID, message, evt) => {
                                                 });
                                             });
                                         break;
-                                        case PLAYERS_COLLECTION:
-                                            /*await PLAYERS_MODEL.find({"discord_id":"code8"})/*.populate("country").populate("platform")*//*.exec(function(err, objects){*/
-                                            const cursor = PLAYERS_MODEL.find({}).batchSize(10000);
-                                            message += "List of registered players for URM\n";
-                                            for (let doc = await cursor.nextObject(); doc != null; doc = await cursor.nextObject()) {
-                                                message += "- Discord: '" + doc.tag /*+ "' | Country: '" + document.country.name */+ "' | elo: '" + doc.elo + "\n";
-                                            }
-                                            bot.sendMessage({
-                                                to:channelID,
-                                                message: message
+                                        /*case PLAYERS_COLLECTION:
+                                            PLAYERS_MODEL.find({})/*.populate("country").populate("platform")*//*.exec(function(err, objects){
+                                                message += "List of registered players for URM\n";
+                                                if(objects.length == 0) message = "The collection is empty.";
+                                                else {
+                                                    objects.forEach(function(document){
+                                                        message += "- Discord: '" + document.tag /*+ "' | Country: '" + document.country.name */+ "' | elo: '" + document.elo + "\n";
+                                                    /*});
+                                                }
+                                                message += "";
+                                                bot.sendMessage({
+                                                    to:channelID,
+                                                    message: message
+                                                });
                                             });
-                                            //});
-                                        break;
+                                        break;*/
                                         case MATCHMAKING_COLLECTION:
                                             message += "List of matchmakings that are taking place now.\n";
                                             MATCHMAKING_MODEL.find({}).populate("challenger").populate("challengee").exec(function(err, matches){
