@@ -620,11 +620,13 @@ bot.on('message', async (user, userID, channelID, message, evt) => {
                                         break;
                                         case PLAYERS_COLLECTION:
                                             /*await PLAYERS_MODEL.find({"discord_id":"code8"})/*.populate("country").populate("platform")*//*.exec(function(err, objects){*/
-                                            const cursor = PLAYERS_MODEL.find({"discord_id":"code8"}).batchSize(10000);
+                                            const cursor = PLAYERS_MODEL.find({}).batchSize(10000);
                                             message += "List of registered players for URM\n";
-                                            for (let doc = await cursor.next(); doc != null; doc = await cursor.next()) {
+                                            cursor.each(function(err, doc){
                                                 message += "- Discord: '" + doc.tag /*+ "' | Country: '" + document.country.name */+ "' | elo: '" + doc.elo + "\n";
-                                            }
+                                            });
+                                            /*for (let doc = await cursor.nextObject(); doc != null; doc = await cursor.nextObject()) {
+                                            }*/
                                             bot.sendMessage({
                                                 to:channelID,
                                                 message: message
