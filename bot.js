@@ -183,7 +183,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                             if(!user_err){
                                                 if(!user_res){
                                                     var coll = {
-                                                        discord_id: evt.d.mentions[0].id,
+                                                        discord_id: ""+evt.d.mentions[0].id,
                                                         tag: params[1],
                                                         created: Date.now()
                                                     }
