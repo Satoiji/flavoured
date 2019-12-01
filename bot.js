@@ -546,9 +546,13 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                             syntax = "--profile [@player]";
                             var query = {};
                             if(evt.d.mentions.length > 0){
-                                query.discord_id = evt.d.mentions[0].id;
+                                query = {
+                                    discord_id: evt.d.mentions[0].id;
+                                }
                             } else {
-                                query.discord_id = userID;
+                                query = {
+                                    discord_id: userID;
+                                }
                             }
                             PLAYERS_MODEL.find(query, function(err, pl){
                                 if(!err){
