@@ -705,7 +705,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 });
 
 async function heavyLoad(message){
-    let objects = await PLAYERS_MODEL.find();/*.exec(await function(err, objects){*/
+    await PLAYERS_MODEL.find().exec(function(err, objects){
     message += "List of registered players for URM\n";
     if(objects.length == 0) message = "The collection is empty.";
     else {
@@ -714,6 +714,6 @@ async function heavyLoad(message){
         });
     }
     message += "";
-    //});
+    });
     return message;
 }
