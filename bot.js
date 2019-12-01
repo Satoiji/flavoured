@@ -183,10 +183,6 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                             if(!user_err){
                                                 if(!user_res){
                                                     var discord_id= ""+evt.d.mentions[0].id;
-                                                    bot.sendMessage({
-                                                        to:channelID,
-                                                        message: discord_id
-                                                    })
                                                     var coll = {
                                                         discord_id: discord_id,
                                                         tag: params[1],
@@ -385,9 +381,9 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                             } else notEnoughParametersMessage(syntax, channelID);
                         break;
                         case PREFIX_ACCEPT_MATCH:
-                            syntax = "--accept {@mention}";
+                            syntax = "--accept {@challenger}";
                             if(params.length == 2){
-                                PLAYERS_MODEL.findOne({"discord_id": evt.d.mentions[0].id}, function(err,c){
+                                PLAYERS_MODEL.findOne({"discord_id": ""+evt.d.mentions[0].id}, function(err,c){
                                     if(!err){
                                     if(p){
                                         MATCHMAKING_MODEL.findOne({$and: 
