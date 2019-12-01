@@ -130,11 +130,6 @@ bot.on('message', function (user, userID, channelID, message, evt) {
     if(message.substring(0,2) == "--"){
         message = message.substring(2,message.length);
         var params = message.split(" ");
-        var me = new USER_MODEL({
-            discord_id: "" + evt.d.mentions[0].id,
-            tag: params[1],
-            created: Date.now()
-        });
         USER_MODEL.findOne({"discord_id": userID}).populate("role").exec(function(err, doc){
             PLAYERS_MODEL.findOne({"discord_id": userID}).exec(function(err2, player){
                 if(doc || player){
