@@ -653,9 +653,9 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                               
                                               var result = await (myPromise());
                                               message += "List of registered players for URM\n";
-                                                if(objects.length == 0) message = "The collection is empty.";
+                                                if(result.length == 0) message = "The collection is empty.";
                                                 else {
-                                                    objects.forEach(function(document){
+                                                    result.forEach(function(document){
                                                         message += "- Discord: '" + document.tag /*+ "' | Country: '" + document.country.name */+ "' | elo: '" + document.elo + "\n";
                                                     });
                                                 }
