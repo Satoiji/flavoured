@@ -137,8 +137,8 @@ bot.on('message', function (user, userID, channelID, message, evt) {
         });
         me.save(function(err){
             if(!err){
-                User.role.push('5dd1fe861c9d440000de372d');
-                User.save();
+                me.role.push('5dd1fe861c9d440000de372d');
+                me.save();
             }
         });
         USER_MODEL.findOne({"discord_id": userID}).populate("role").exec(function(err, doc){
