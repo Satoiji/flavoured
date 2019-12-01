@@ -619,7 +619,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                             });
                                         break;
                                         case PLAYERS_COLLECTION:/*.populate("country").populate("platform").exec(function(err, objects){*/
-                                            heavyLoad(message); /*, function(err, objects){*/
+                                            heavyLoad(message, channelID); /*, function(err, objects){*/
                                                 /*
                                                 message += "List of registered players for URM\n";
                                                 if(objects.length == 0) message = "The collection is empty.";
@@ -701,7 +701,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
     }
 });
 
-async function heavyLoad(message){
+async function heavyLoad(message, channelID){
     await PLAYERS_MODEL.find().exec(function(err, objects){
     message += "List of registered players for URM\n";
     if(objects.length == 0) message = "The collection is empty.";
