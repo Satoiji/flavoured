@@ -380,7 +380,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                             } else notEnoughParametersMessage(syntax, channelID);
                         break;
                         case PREFIX_ACCEPT_MATCH:
-                            syntax = "--accept {@challenger}";
+                            syntax = "--accept {@mention}";
                             if(params.length == 2){
                                 PLAYERS_MODEL.findOne({"discord_id": evt.d.mentions[0].id}, function(err,p){
                                     if(!err){
@@ -395,12 +395,12 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                     }, function(err, match){
                                                         if(!err){
                                                         if(match){
-                                                            var date = Date.now();
-                                                            var exp = date.setDate(Date.now() + 7);
+                                                            var date = new Date(Date.now());
+                                                            var exp = date.setDate(date.getDate() + 7);
                                                             var coll = {
                                                                 player1: p._id,
                                                                 player2: player._id,
-                                                                created_date: date,
+                                                                created_date: Date.now(),
                                                                 expiry_date: exp
                                                             }
                                                             MATCHMAKING_MODEL.create(coll, function(err){
