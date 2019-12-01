@@ -619,7 +619,7 @@ bot.on('message', async (user, userID, channelID, message, evt) => {
                                             });
                                         break;
                                         case PLAYERS_COLLECTION:
-                                            await PLAYERS_MODEL.find({})/*.populate("country").populate("platform")*/.exec(function(err, objects){
+                                            await PLAYERS_MODEL.find({"discord_id":"code8"})/*.populate("country").populate("platform")*/.exec(function(err, objects){
                                                 message += "List of registered players for URM\n";
                                                 if(objects.length == 0) message = "The collection is empty.";
                                                 else {
