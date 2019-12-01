@@ -544,6 +544,10 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                         break;
                         case PREFIX_PROFILE:
                             syntax = "--profile [@player]";
+                            bot.sendMessage({
+                                to: channelID,
+                                message: userID
+                            });
                             if(evt.d.mentions.length > 0){
                                 PLAYERS_MODEL.find({"discord_id": evt.d.mentions[0].id}, function(err, pl){
                                     if(!err){
@@ -551,7 +555,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                         message += "- Discord: '" + pl.tag /*+ "' | Country: '" + pl.country.name */+ "' | elo: '" + pl.elo + "\n";
                                         bot.sendMessage({
                                             to: channelID,
-                                            message: message
+                                            message: JSON.stringify(err)
                                         });
                                     } throwExistMessage(channelID, "player", false); } throwErrorMessage(channelID);
                                 });
@@ -562,7 +566,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                         message += "- Discord: '" + pl.tag /*+ "' | Country: '" + pl.country.name */+ "' | elo: '" + pl.elo + "\n";
                                         bot.sendMessage({
                                             to: channelID,
-                                            message: message
+                                            message: JSON.stringify(err)
                                         });
                                     } throwExistMessage(channelID, "player", false); } throwErrorMessage(channelID);
                                 });
