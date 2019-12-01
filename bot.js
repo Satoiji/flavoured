@@ -182,7 +182,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                         USER_MODEL.findOne({discord_id: evt.d.mentions[0].id}, function(user_err,user_res){
                                             if(!user_err){
                                                 if(!user_res){
-                                                    var discord_id= ""+evt.d.mentions[0].id,
+                                                    var discord_id= ""+evt.d.mentions[0].id;
                                                     bot.sendMessage({
                                                         to:channelID,
                                                         message: discord_id
