@@ -38,6 +38,7 @@ const REGISTER_TAG_POSITION = 1;
 const REGISTER_NAME_POSITION = 2;
 const REGISTER_COUNTRY_CODE_POSITION = 3;
 const REGISTER_PLATFORM_POSITION = 4;
+const REGISTER_HOURS_POSITION = 5;
 
 //register constants
 const PREFIX_REGISTER = "register";
@@ -60,7 +61,7 @@ const PREFIX_MATCHMAKE = "matchmake";
 const PREFIX_MATCH_END = "end-match";
 
 //match declare constants
-const PREFIX_MATCH_DECLARE = "declare";
+const PREFIX_MATCH_DECLARE = "challenge";
 
 //match accept constants
 const PREFIX_ACCEPT_MATCH = "accept";
@@ -73,11 +74,31 @@ const PREFIX_RATING = "rating"
 
 //middleware constants
 var MIDDLEWARE = [
-    /*admins*/      [PREFIX_RATING/*,PREFIX_MATCH_END,PREFIX_LIST,PREFIX_MATCHMAKE,PREFIX_REGISTER_COUNTRY,PREFIX_REGISTER_PLATFORM,PREFIX_REGISTER_PLAYER*/],
-    /*matchmakers*/ [/*PREFIX_MATCH_END,PREFIX_MATCHMAKE,PREFIX_LIST*/],
-    /*registers*/   [/*PREFIX_REGISTER_COUNTRY,PREFIX_REGISTER_PLATFORM,PREFIX_REGISTER_PLAYER*/],
-    /*owner*/       [PREFIX_MATCH_DECLARE,PREFIX_RATING,PREFIX_MATCH_END,PREFIX_REGISTER,PREFIX_LIST,PREFIX_MATCHMAKE,PREFIX_REGISTER_COUNTRY,PREFIX_REGISTER_PLATFORM,PREFIX_REGISTER_PLAYER],
-    /*player*/      [/*PREFIX_MATCH_DECLARE,*/ PREFIX_ACCEPT_MATCH],
+    /*admins*/      [PREFIX_RATING,
+                        PREFIX_MATCH_END,
+                        PREFIX_LIST,
+                        PREFIX_MATCHMAKE,
+                        PREFIX_REGISTER_COUNTRY,
+                        PREFIX_REGISTER_PLATFORM,
+                        PREFIX_REGISTER_PLAYER],
+    /*matchmakers*/ [/*PREFIX_MATCH_END,    
+                        PREFIX_MATCHMAKE,
+                        PREFIX_LIST*/],
+    /*registers*/   [/*PREFIX_REGISTER_COUNTRY,
+                        PREFIX_REGISTER_PLATFORM,
+                        PREFIX_REGISTER_PLAYER*/],
+    /*owner*/       [PREFIX_MATCH_DECLARE,
+                        PREFIX_RATING,
+                        PREFIX_MATCH_END,
+                        PREFIX_REGISTER,
+                        PREFIX_LIST,
+                        PREFIX_MATCHMAKE,
+                        PREFIX_REGISTER_COUNTRY,
+                        PREFIX_REGISTER_PLATFORM,
+                        PREFIX_REGISTER_PLAYER],
+    /*player*/      [PREFIX_MATCH_DECLARE, 
+                        PREFIX_ACCEPT_MATCH, 
+                        PREFIX_REGISTER_PLAYER],
 ];
 
 function throwErrorMessage(channelID){
@@ -189,8 +210,8 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                             } else notEnoughParametersMessage(syntax,channelID);
                         break;
                         case PREFIX_REGISTER_PLAYER:
-                            syntax = "--regPlayer {@mention} {name} {country code{2}} {platform{2}}";
-                            if(params.length == 5){
+                            syntax = "--regPlayer {@mention} {name} {country code{2}} {platform{2}} [hours]";
+                            if(params.length >= 5){
                                 PLAYERS_MODEL.findOne({'discord_id': evt.d.mentions[0].id}, function(e1,r1){
                                     if(!e1){
                                     if(!r1){
@@ -225,6 +246,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                                 });
                                                             } else throwExistMessage(channelID, "role", false); } else throwErrorMessage(channelID);
                                                         });
+                                                        var hours = params.length == 6 ? params[REGISTER_HOURS_POSITION] : -1;
                                                         var coll = {
                                                             discord_id: evt.d.mentions[0].id,
                                                             name: params[REGISTER_NAME_POSITION],
@@ -233,8 +255,11 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                             platform: r3._id,
                                                             created: evt.d.timestamp,
                                                             games_played: 0,
+                                                            wins: 0,
+                                                            losses: 0,
                                                             elo1_temp: 1000,
                                                             elo2_temp: 1000,
+                                                            hours: hours,
                                                             last_game_date: evt.d.timestamp
                                                         }
                                                         PLAYERS_MODEL.create(coll, function(err){
@@ -316,105 +341,21 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                 }
                             } else notEnoughParametersMessage(syntax,channelID);
                         break;
-                        case PREFIX_MATCHMAKE:
-                            syntax = "--matchmake {@mention p1} {@mention p2}";
-                            if(evt.d.mentions.length == 2){
-                                PLAYERS_MODEL.find({$or: [{'discord_id': evt.d.mentions[0].id}, {'discord_id': evt.d.mentions[1].id}]}, function(err,players){
-                                    if(!err){
-                                    if(players.length == 2){
-                                        MATCHMAKING_MODEL.find(
-                                            {$or: [
-                                                {'player1': players[0]._id}, 
-                                                {'player2': players[0]._id},
-                                                {'player1': players[1]._id}, 
-                                                {'player2': players[1]._id}
-                                            ]}, function(err,errorPlayers){
-                                            if(!err){
-                                            if(errorPlayers == 0){
-                                                var coll = {
-                                                    player1: players[0]._id,
-                                                    player2: players[1]._id,
-                                                    created_date: Date.now()
-                                                }
-                                                MATCHMAKING_MODEL.create(coll, function(err){
-                                                    if(!err){
-                                                        bot.sendMessage({
-                                                            to: channelID,
-                                                            message: "The match has successfully created!"
-                                                        });
-                                                    } else throwErrorMessage(channelID);
-                                                });
-                                            } else {
-                                                bot.sendMessage({
-                                                    to:channelID,
-                                                    message: "One or both players are already in a match, this or these players can't be added to a new one"
-                                                });
-                                            } } else throwErrorMessage(channelID);
-                                        });
-                                    } else bot.sendMessage({to:channelID, message:"One or both players ain't registered as ranked players."}) } else throwErrorMessage(channelID);
-                                });
-                            } else notEnoughParametersMessage(syntax,channelID);
-                        break;
-                        case PREFIX_MATCH_END:
-                            syntax = "--end-match {@player} {win|lose|delete}";
-                            if(params.length == 3){
-                                MATCHMAKING_MODEL.find()
-                                .populate("player1")
-                                .populate("player2").exec(function(err, matches){
-                                    matches.forEach(function(match){
-                                        if (match.player1.discord_id == evt.d.mentions[0].id || 
-                                            match.player2.discord_id == evt.d.mentions[0].id){
-                                            if(params[2] == "delete"){
-                                                match.remove();
-                                                return;
-                                            }
-                                            PLAYERS_MODEL.find({$or: 
-                                                [{'discord_id': match.player1.discord_id}, {'discord_id': match.player2.discord_id}]}, 
-                                                function(err,players){
-                                                var isPlayer1 = match.player1.discord_id == evt.d.mentions[0].id;
-                                                var p = isPlayer1 ? match.player1.elo2_temp : match.player2.elo2_temp;
-                                                var v = isPlayer1 ? match.player2.elo2_temp : match.player1.elo2_temp;
-                                                var r = params[2] == "win" ? 1 : 0;
-                                                var s = 1000;
-                                                var k = 16 + Math.floor(Math.abs(v - p) / 200) * 2;
-                                                var newp = p + k * (r - 1 / ((Math.pow(2,1 - (p-v)/s))+1));
-                                                var newv = v + k * (1 - r - 1 / ((Math.pow(2,1 - (v-p)/s))+1));
-                                                if(isPlayer1){
-                                                    players[0].elo2_temp = newp;
-                                                    players[1].elo2_temp = newv;
-                                                } else {
-                                                    players[1].elo2_temp = newp;
-                                                    players[0].elo2_temp = newv;
-                                                }
-                                                players[0].games_played++;
-                                                players[0].last_game_date = Date.now();
-                                                players[0].save();
-                                                players[1].games_played++;
-                                                players[1].last_game_date = Date.now();
-                                                players[1].save();
-                                            });
-                                            match.remove();
-                                            return;
-                                        }
-                                    });
-                                });
-                            } else notEnoughParametersMessage(syntax,channelID);
-                        break;
                         case PREFIX_MATCH_DECLARE:
-                            syntax = "--declare {@mention}";
+                            syntax = "--challenge {@mention}";
                             if(params.length == 2){
                                 PLAYERS_MODEL.findOne({"discord_id": evt.d.mentions[0].id}, function(err,opponent){
                                     if(!err){
                                     if(opponent){
-                                        MATCHMAKING_MODEL.findOne({$or: [{"player1": player._id}, {"player2": player._id}]}, function(err, currentMatch){
+                                        MATCHMAKING_MODEL.findOne({$or: [{"challenger": player._id}, {"challengee": player._id}]}, function(err, currentMatch){
                                             if(!err){
                                             if(!currentMatch){
-                                                DECLARE_MATCHES_MODEL.findOne({$and: [{"declare": player._id}, {"opponent": opponent._id}]}, function(err, declared){
+                                                DECLARE_MATCHES_MODEL.findOne({$and: [{"challenger": player._id}, {"challengee": opponent._id}]}, function(err, declared){
                                                     if(!err){
                                                     if(!declared){
                                                         var coll = {
-                                                            declare: player._id,
-                                                            opponent: opponent._id,
+                                                            challenger: player._id,
+                                                            challengee: opponent._id,
                                                             created_date: Date.now()
                                                         }
                                                         DECLARE_MATCHES_MODEL.create(coll, function(e){
@@ -444,20 +385,23 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                 PLAYERS_MODEL.findOne({"discord_id": evt.d.mentions[0].id}, function(err,p){
                                     if(!err){
                                     if(p){
-                                        MATCHMAKING_MODEL.findOne({$or: 
-                                            [{'player1':p._id},{'player2':p._id},{'player1':player._id},{'player2':player._id}]}, 
+                                        MATCHMAKING_MODEL.findOne({$and: 
+                                            [{'challenger':p._id},{'challengee':p._id},{'challenger':player._id},{'challengee':player._id}]}, 
                                             function(err, match1){
                                                 if(!err){
                                                 if(!match1){
                                                     DECLARE_MATCHES_MODEL.findOne({$and: 
-                                                        [{"declare": p._id}, {"opponent": player._id}]
+                                                        [{"challenger": p._id}, {"challengee": player._id}]
                                                     }, function(err, match){
                                                         if(!err){
                                                         if(match){
+                                                            var date = Date.now();
+                                                            var exp = date.setDate(date.getDate() + 7);
                                                             var coll = {
                                                                 player1: p._id,
                                                                 player2: player._id,
-                                                                created_date: Date.now()
+                                                                created_date: date,
+                                                                expiry_date: exp
                                                             }
                                                             MATCHMAKING_MODEL.create(coll, function(err){
                                                                 if(!err){
@@ -481,34 +425,140 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                 });
                             } else notEnoughParametersMessage(syntax, channelID);
                         break;
+                        case PREFIX_MATCHMAKE:
+                        /* ADMINS */
+                            syntax = "--matchmake {@mention p1} {@mention p2}";
+                            if(evt.d.mentions.length == 2){
+                                PLAYERS_MODEL.find({$or: [{'discord_id': evt.d.mentions[0].id}, {'discord_id': evt.d.mentions[1].id}]}, function(err,players){
+                                    if(!err){
+                                    if(players.length == 2){
+                                        MATCHMAKING_MODEL.find(
+                                            {$or: [
+                                                {'challenger': players[0]._id}, 
+                                                {'challengee': players[0]._id},
+                                                {'challenger': players[1]._id}, 
+                                                {'challengee': players[1]._id}
+                                            ]}, function(err,errorPlayers){
+                                            if(!err){
+                                            if(errorPlayers == 0){
+                                                var coll = {
+                                                    player1: players[0]._id,
+                                                    player2: players[1]._id,
+                                                    created_date: Date.now()
+                                                }
+                                                MATCHMAKING_MODEL.create(coll, function(err){
+                                                    if(!err){
+                                                        bot.sendMessage({
+                                                            to: channelID,
+                                                            message: "The match has bee successfully created!"
+                                                        });
+                                                    } else throwErrorMessage(channelID);
+                                                });
+                                            } else {
+                                                bot.sendMessage({
+                                                    to:channelID,
+                                                    message: "One or both players are already in a match, this or these players can't be added to a new one"
+                                                });
+                                            } } else throwErrorMessage(channelID);
+                                        });
+                                    } else bot.sendMessage({to:channelID, message:"One or both players ain't registered as ranked players."}) } else throwErrorMessage(channelID);
+                                });
+                            } else notEnoughParametersMessage(syntax,channelID);
+                        break;
+                        case PREFIX_MATCH_END:
+                        /* ADMIN */
+                            syntax = "--end-match {@winner} {@losser} [delete]";
+                            if(params.length == 3){
+                                MATCHMAKING_MODEL.find()
+                                .populate("challenger")
+                                .populate("challengee").exec(function(err, match){
+                                    if(!err){
+                                    if(match){
+                                        if(params[3] == "delete"){
+                                            match.remove();
+                                            return;
+                                        }
+                                        PLAYERS_MODEL.find({$or: 
+                                            [{'discord_id': match.challenger.discord_id}, {'discord_id': match.challengee.discord_id}]}, 
+                                            function(err,players){
+
+                                            //syntax = "--rating {p} {v} {1|0}";
+                                            var p = Number.parseFloat (players[0].elo);
+                                            TB1 = p < 2000 ? 100 : 0;
+                                            var v = Number.parseFloat (players[1].elo);
+                                            TB2 = v < 2000 ? 100 : 0;
+                                            var win = 1;
+                                            var P = p + 300*(win - 1/(1 + Math.pow(10,(-(p-v)/1000)))) + (win)*TB1;
+                                            var V = v + 300*((1-win) - 1/(1 + Math.pow(10,(-(v-p)/1000)))) + (1-win)*TB2;
+
+                                            players[0].elo = P;
+                                            players[1].elo = V;
+
+                                            players[0].games_played++;
+                                            players[0].wins++;
+                                            players[0].last_game_date = Date.now();
+                                            players[0].save();
+                                            players[1].games_played++;
+                                            players[1].wins++;
+                                            players[1].last_game_date = Date.now();
+                                            players[1].save();
+
+                                            var coll = {
+                                                challenger: players[0]._id,
+                                                challengee: players[1]._id,
+                                                created_date: match.created_date,
+                                                game_date: Date.now(),
+                                                challenger_old_rating: p,
+                                                challenger_new_rating: v,
+                                                challengee_old_rating: P,
+                                                challengee_new_rating: V,
+                                                status: 1,
+                                            }
+
+                                            MATCHMAKING_HISTORY_MODEL.create(coll, function(err){
+                                                if(err){
+                                                    bot.sendMessage({
+                                                        to: channelID,
+                                                        message: "The match failed to register in the history match."
+                                                    });
+                                                }
+                                            });
+                                        });
+                                        match.remove();
+                                        return;
+                                    } else throwExistMessage(channelID,'matchmake',false)} else throwErrorMessage(channelID);
+                                });
+                            } else notEnoughParametersMessage(syntax,channelID);
+                        break;
+
                         case PREFIX_LIST:
                             syntax = "--list {collection}";
                             if(params.length < 3){
                                 if(params.length == 1){
                                     bot.sendMessage({
                                         to: channelID,
-                                        message: "```"+
+                                        message: ""+
                                         "Available collections: \n"+
                                         "1) " + ROLES_COLLECTION+ ", Available roles\n"+
                                         "2) " + PLATFORMS_COLLECTION+", Available platforms\n"+
                                         "3) " + COUNTRIES_COLLECTION+", Available countries\n"+
                                         "4) " + USERS_COLLECTION+", Available users\n"+
                                         "5) " + MATCHMAKING_COLLECTION+", Matchmakings in progress\n"+
-                                        "6) commands```"
+                                        "6) commands"
                                     });
                                 } else {
                                     var message = "";
                                     switch(params[1]){
                                         case COUNTRIES_COLLECTION:
                                             COUNTRIES_MODEL.find({}, function(err, objects){
-                                                message += "```List of available countries\n";
-                                                if(objects.length == 0) message = "```The collection is empty.";
+                                                message += "List of available countries\n";
+                                                if(objects.length == 0) message = "The collection is empty.";
                                                 else {
                                                     objects.forEach(function(document){
                                                         message += "- Name: " + document.name + " | Code: " + document.code.toUpperCase() + "\n";
                                                     });
                                                 }
-                                                message += "```";
+                                                message += "";
                                                 bot.sendMessage({
                                                     to:channelID,
                                                     message: message
@@ -517,14 +567,14 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                         break;
                                         case PLATFORMS_COLLECTION:
                                             PLATFORMS_MODEL.find({}, function(err, objects){
-                                                message += "```List of available platforms\n";
-                                                if(objects.length == 0) message = "```The collection is empty.";
+                                                message += "List of available platforms\n";
+                                                if(objects.length == 0) message = "The collection is empty.";
                                                 else {
                                                     objects.forEach(function(document){
                                                         message += "- Name: " + document.name + " | Code: " + document.code.toUpperCase() + "\n";
                                                     });
                                                 }
-                                                message += "```";
+                                                message += "";
                                                 bot.sendMessage({
                                                     to:channelID,
                                                     message: message
@@ -533,14 +583,14 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                         break;
                                         case ROLES_COLLECTION:
                                             ROLES_MODEL.find({}, function(err, objects){
-                                                message += "```List of available roles\n";
-                                                if(objects.length == 0) message = "```The collection is empty.";
+                                                message += "List of available roles\n";
+                                                if(objects.length == 0) message = "The collection is empty.";
                                                 else {
                                                     objects.forEach(function(document){
                                                         message += "- Name: '" + document.name + "'\n";
                                                     });
                                                 }
-                                                message += "```";
+                                                message += "";
                                                 bot.sendMessage({
                                                     to:channelID,
                                                     message: message
@@ -549,14 +599,14 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                         break;
                                         case USERS_COLLECTION:
                                             USER_MODEL.find({}).populate("role").exec(function(err,objects){
-                                                message += "```List of users\n";
-                                                if(objects.length == 0) message = "```The collection is empty.";
+                                                message += "List of users\n";
+                                                if(objects.length == 0) message = "The collection is empty.";
                                                 else {
                                                     objects.forEach(function(document){
                                                         message += "- Discord: '" + document.tag + "' | Role: '" + document.role.name + "'\n";
                                                     });
                                                 }
-                                                message += "```";
+                                                message += "";
                                                 bot.sendMessage({
                                                     to:channelID,
                                                     message: message
@@ -580,14 +630,14 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                             });
                                         break;
                                         case MATCHMAKING_COLLECTION:
-                                            message += "```List of matchmakings that are taking place now.```\n";
-                                            MATCHMAKING_MODEL.find({}).populate("player1").populate("player2").exec(function(err, matches){
+                                            message += "List of matchmakings that are taking place now.\n";
+                                            MATCHMAKING_MODEL.find({}).populate("challenger").populate("challengee").exec(function(err, matches){
                                                 matches.forEach(function(match){
                                                     var date = match.created_date.getDate();
                                                     var month = match.created_date.getMonth();
                                                     var year = match.created_date.getFullYear();
                                                     var dateString = date + "/" +(month + 1) + "/" + year;
-                                                    message += dateString + " - " + match.player1.tag + " vs " + match.player2.tag + "\n";
+                                                    message += dateString + " - " + match.challenger.tag + " vs " + match.challengee.tag + "\n";
                                                 });
         
                                                 bot.sendMessage({
@@ -597,13 +647,13 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                             });
                                         break;
                                         case "commands":
-                                            message+= "```List of commands: \n";
+                                            message+= "List of commands: \n";
                                             message+= PREFIX_LIST + ": lists the available collections.\n"+
                                                     PREFIX_REGISTER_PLAYER + ": Register a new player\n"+
                                                     PREFIX_REGISTER_PLATFORM + ": Register a new platform\n"+
                                                     PREFIX_REGISTER_COUNTRY + ": Register a new country\n"+
                                                     PREFIX_REGISTER + ": Register a new user\n"+
-                                                    PREFIX_MATCHMAKE + ": Register a new matchmake.```";
+                                                    PREFIX_MATCHMAKE + ": Register a new matchmake.";
                                             bot.sendMessage({
                                                 to:channelID,
                                                 message:message

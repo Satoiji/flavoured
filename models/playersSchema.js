@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const PLAYERS_COLLECTION = "players";
-
 const schema = new mongoose.Schema({
   discord_id: String,
   name: String,
@@ -9,8 +8,10 @@ const schema = new mongoose.Schema({
   platform: { type: mongoose.Schema.Types.ObjectId, ref: 'platforms' },
   created: Date,
   games_played: Number,
-  elo1_temp: Number,
-  elo2_temp: Number,
+  wins: Number,
+  losses: Number
+  elo: Number,
+  hours: Number
   last_game_date: Date
 });
 

@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 const DECLARE_MATCHES_COLLECTION = "declare_matches";
 
 const schema = new mongoose.Schema({
-    declare: { type: mongoose.Schema.Types.ObjectId, ref: 'players' },
-    opponent: { type: mongoose.Schema.Types.ObjectId, ref: 'players' },
+    challenger: { type: mongoose.Schema.Types.ObjectId, ref: 'players' },
+    challengee: { type: mongoose.Schema.Types.ObjectId, ref: 'players' },
     created_date: Date
 });
 
