@@ -182,8 +182,9 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                         USER_MODEL.findOne({discord_id: evt.d.mentions[0].id}, function(user_err,user_res){
                                             if(!user_err){
                                                 if(!user_res){
+                                                    var discord_id= ""+evt.d.mentions[0].id;
                                                     var coll = {
-                                                        discord_id: evt.d.mentions[0].id,
+                                                        discord_id: discord_id,
                                                         tag: params[1],
                                                         created: Date.now()
                                                     }
@@ -199,7 +200,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                         } else 
                                                             throwErrorMessage(channelID);
                                                     });
-                                                } else {
+                                                } else {    
                                                     user_res.role.push(role_res._id);
                                                     user_res.save();
                                                 }
@@ -257,8 +258,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                             games_played: 0,
                                                             wins: 0,
                                                             losses: 0,
-                                                            elo1_temp: 1000,
-                                                            elo2_temp: 1000,
+                                                            elo: 1500,
                                                             hours: hours,
                                                             last_game_date: evt.d.timestamp
                                                         }
@@ -342,7 +342,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                             } else notEnoughParametersMessage(syntax,channelID);
                         break;
                         case PREFIX_MATCH_DECLARE:
-                            syntax = "--challenge {@mention}";
+                            syntax = "--challenge {@challengee}";
                             if(params.length == 2){
                                 PLAYERS_MODEL.findOne({"discord_id": evt.d.mentions[0].id}, function(err,opponent){
                                     if(!err){
@@ -380,9 +380,9 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                             } else notEnoughParametersMessage(syntax, channelID);
                         break;
                         case PREFIX_ACCEPT_MATCH:
-                            syntax = "--accept {@mention}";
+                            syntax = "--accept {@challenger}";
                             if(params.length == 2){
-                                PLAYERS_MODEL.findOne({"discord_id": evt.d.mentions[0].id}, function(err,p){
+                                PLAYERS_MODEL.findOne({'discord_id': evt.d.mentions[0].id}, function(err,p){
                                     if(!err){
                                     if(p){
                                         MATCHMAKING_MODEL.findOne({$and: 
@@ -395,19 +395,19 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                     }, function(err, match){
                                                         if(!err){
                                                         if(match){
-                                                            var date = Date.now();
+                                                            var date = new Date(Date.now());
                                                             var exp = date.setDate(date.getDate() + 7);
                                                             var coll = {
-                                                                player1: p._id,
-                                                                player2: player._id,
-                                                                created_date: date,
+                                                                challenger: p._id,
+                                                                challengee: player._id,
+                                                                created_date: Date.now(),
                                                                 expiry_date: exp
                                                             }
                                                             MATCHMAKING_MODEL.create(coll, function(err){
                                                                 if(!err){
                                                                     bot.sendMessage({
                                                                         to:channelID,
-                                                                        message: "You have accepted the match from " +  player.tag + ", it's time to fight and show the results."
+                                                                        message: "You have accepted the match from " +  p.tag + ", it's time to fight and show the results."
                                                                     });
                                                                 } else throwErrorMessage(channelID);
                                                             });
@@ -469,7 +469,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                         /* ADMIN */
                             syntax = "--end-match {@winner} {@losser} [delete]";
                             if(params.length == 3){
-                                MATCHMAKING_MODEL.find()
+                                MATCHMAKING_MODEL.findOne()
                                 .populate("challenger")
                                 .populate("challengee").exec(function(err, match){
                                     if(!err){
@@ -483,16 +483,16 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                             function(err,players){
 
                                             //syntax = "--rating {p} {v} {1|0}";
-                                            var p = Number.parseFloat (players[0].elo);
+                                            var p = Number.parseFloat (players[1].elo);
                                             TB1 = p < 2000 ? 100 : 0;
-                                            var v = Number.parseFloat (players[1].elo);
+                                            var v = Number.parseFloat (players[0].elo);
                                             TB2 = v < 2000 ? 100 : 0;
                                             var win = 1;
                                             var P = p + 300*(win - 1/(1 + Math.pow(10,(-(p-v)/1000)))) + (win)*TB1;
                                             var V = v + 300*((1-win) - 1/(1 + Math.pow(10,(-(v-p)/1000)))) + (1-win)*TB2;
 
-                                            players[0].elo = P;
-                                            players[1].elo = V;
+                                            players[0].elo = V;
+                                            players[1].elo = P;
 
                                             players[0].games_played++;
                                             players[0].wins++;
@@ -508,10 +508,10 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                 challengee: players[1]._id,
                                                 created_date: match.created_date,
                                                 game_date: Date.now(),
-                                                challenger_old_rating: p,
-                                                challenger_new_rating: v,
-                                                challengee_old_rating: P,
-                                                challengee_new_rating: V,
+                                                challenger_old_rating: v,
+                                                challenger_new_rating: p,
+                                                challengee_old_rating: V,
+                                                challengee_new_rating: P,
                                                 status: 1,
                                             }
 
