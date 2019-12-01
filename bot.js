@@ -470,7 +470,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                         /* ADMIN */
                             syntax = "--end-match {@winner} {@losser} [delete]";
                             if(params.length == 3){
-                                MATCHMAKING_MODEL.find()
+                                MATCHMAKING_MODEL.findOne()
                                 .populate("challenger")
                                 .populate("challengee").exec(function(err, match){
                                     if(!err){
