@@ -652,6 +652,13 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                            var callMyPromise = async () => {
                                               
                                               var result = await (myPromise());
+                                              //anything here is executed after result is resolved
+                                              return result;
+                                           };
+                                     
+                                           //Step 3: make the call
+                                           callMyPromise().then(function(result) {
+                                              
                                               message += "List of registered players for URM\n";
                                                 if(result.length == 0) message = "The collection is empty.";
                                                 else {
@@ -664,13 +671,6 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                     to:channelID,
                                                     message: message
                                                 });
-                                              //anything here is executed after result is resolved
-                                              return result;
-                                           };
-                                     
-                                           //Step 3: make the call
-                                           callMyPromise().then(function(result) {
-                                              
                                            });
                                         break;
                                         case MATCHMAKING_COLLECTION:
