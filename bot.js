@@ -182,8 +182,13 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                         USER_MODEL.findOne({discord_id: evt.d.mentions[0].id}, function(user_err,user_res){
                                             if(!user_err){
                                                 if(!user_res){
+                                                    var discord_id= ""+evt.d.mentions[0].id,
+                                                    bot.sendMessage({
+                                                        to:channelID,
+                                                        message: discord_id
+                                                    })
                                                     var coll = {
-                                                        discord_id: ""+evt.d.mentions[0].id,
+                                                        discord_id: discord_id,
                                                         tag: params[1],
                                                         created: Date.now()
                                                     }
@@ -199,7 +204,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                         } else 
                                                             throwErrorMessage(channelID);
                                                     });
-                                                } else {
+                                                } else {    
                                                     user_res.role.push(role_res._id);
                                                     user_res.save();
                                                 }
