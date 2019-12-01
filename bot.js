@@ -258,8 +258,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                             games_played: 0,
                                                             wins: 0,
                                                             losses: 0,
-                                                            elo1_temp: 1000,
-                                                            elo2_temp: 1000,
+                                                            elo: 1500,
                                                             hours: hours,
                                                             last_game_date: evt.d.timestamp
                                                         }
