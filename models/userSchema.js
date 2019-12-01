@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const USERS_COLLECTION = "users";
 
 const schema = new mongoose.Schema({
-  discord_id: Number,
+  discord_id: String,
   tag: String,
   role: [{ type: mongoose.Schema.Types.ObjectId, ref: 'roles' }],
   created: Date
