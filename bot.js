@@ -521,6 +521,11 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                         to: channelID,
                                                         message: "The match failed to register in the history match."
                                                     });
+                                                } else {
+                                                    bot.sendMessage({
+                                                        to: channelID,
+                                                        message: "Match has successfully ended."
+                                                    })
                                                 }
                                             });
                                         });
@@ -614,12 +619,12 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                             });
                                         break;
                                         case PLAYERS_COLLECTION:
-                                            PLAYERS_MODEL.find({}).populate("country").populate("platform").exec(function(err, objects){
+                                            PLAYERS_MODEL.find({})/*.populate("country").populate("platform")*/.exec(function(err, objects){
                                                 message += "List of registered players for URM\n";
                                                 if(objects.length == 0) message = "The collection is empty.";
                                                 else {
                                                     objects.forEach(function(document){
-                                                        message += "- Discord: '" + document.tag + "' | Country: '" + document.country.name + "' | ELO_V2: '" + document.elo2_temp.toFixed(2) + "\n";
+                                                        message += "- Discord: '" + document.tag + "' | Country: '" + document.country.name + "' | elo: '" + document.elo + "\n";
                                                     });
                                                 }
                                                 message += "";
