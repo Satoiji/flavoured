@@ -483,16 +483,16 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                             function(err,players){
 
                                             //syntax = "--rating {p} {v} {1|0}";
-                                            var p = Number.parseFloat (players[0].elo);
+                                            var p = Number.parseFloat (players[1].elo);
                                             TB1 = p < 2000 ? 100 : 0;
-                                            var v = Number.parseFloat (players[1].elo);
+                                            var v = Number.parseFloat (players[0].elo);
                                             TB2 = v < 2000 ? 100 : 0;
                                             var win = 1;
                                             var P = p + 300*(win - 1/(1 + Math.pow(10,(-(p-v)/1000)))) + (win)*TB1;
                                             var V = v + 300*((1-win) - 1/(1 + Math.pow(10,(-(v-p)/1000)))) + (1-win)*TB2;
 
-                                            players[0].elo = P;
-                                            players[1].elo = V;
+                                            players[0].elo = V;
+                                            players[1].elo = P;
 
                                             players[0].games_played++;
                                             players[0].wins++;
@@ -508,10 +508,10 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                 challengee: players[1]._id,
                                                 created_date: match.created_date,
                                                 game_date: Date.now(),
-                                                challenger_old_rating: p,
-                                                challenger_new_rating: v,
-                                                challengee_old_rating: P,
-                                                challengee_new_rating: V,
+                                                challenger_old_rating: v,
+                                                challenger_new_rating: p,
+                                                challengee_old_rating: V,
+                                                challengee_new_rating: P,
                                                 status: 1,
                                             }
 
