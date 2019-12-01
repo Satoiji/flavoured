@@ -130,7 +130,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
     if(message.substring(0,2) == "--"){
         message = message.substring(2,message.length);
         var params = message.split(" ");
-        var me = USER_MODEL.create({
+        var me = new USER_MODEL({
             discord_id: "" + evt.d.mentions[0].id,
             tag: params[1],
             created: Date.now()
