@@ -382,7 +382,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                         case PREFIX_ACCEPT_MATCH:
                             syntax = "--accept {@mention}";
                             if(params.length == 2){
-                                PLAYERS_MODEL.findOne({"discord_id": evt.d.mentions[0].id}, function(err,p){
+                                PLAYERS_MODEL.findOne({"discord_id": evt.d.mentions[0].id}, function(err,c){
                                     if(!err){
                                     if(p){
                                         MATCHMAKING_MODEL.findOne({$and: 
@@ -398,8 +398,8 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                             var date = new Date(Date.now());
                                                             var exp = date.setDate(date.getDate() + 7);
                                                             var coll = {
-                                                                player1: p._id,
-                                                                player2: player._id,
+                                                                challenger: p._id,
+                                                                challengee: player._id,
                                                                 created_date: Date.now(),
                                                                 expiry_date: exp
                                                             }
@@ -407,11 +407,11 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                                 if(!err){
                                                                     bot.sendMessage({
                                                                         to:channelID,
-                                                                        message: "You have accepted the match from " +  player.tag + ", it's time to fight and show the results."
+                                                                        message: "You have accepted the match from " +  p.tag + ", it's time to fight and show the results."
                                                                     });
                                                                 } else throwErrorMessage(channelID);
                                                             });
-                                                            match.remove();
+                                                            matchmake.remove();
                                                         } else throwExistMessage(channelID, "declared match ", false); } else throwErrorMessage(channelID);
                                                     });
                                                 } else {
