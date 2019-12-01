@@ -618,9 +618,8 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                 });
                                             });
                                         break;
-                                        case PLAYERS_COLLECTION:/*.populate("country").populate("platform").exec(function(err, objects){*/
-                                            heavyLoad(message, channelID); /*, function(err, objects){*/
-                                                /*
+                                        case PLAYERS_COLLECTION:
+                                            /*PLAYERS_MODEL.find({})/*.populate("country").populate("platform")*//*.exec(function(err, objects){
                                                 message += "List of registered players for URM\n";
                                                 if(objects.length == 0) message = "The collection is empty.";
                                                 else {
@@ -634,6 +633,45 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                     message: message
                                                 });
                                             });*/
+                                            //Step 1: declare promise
+      
+                                           var myPromise = () => {
+                                             return new Promise((resolve, reject) => {
+                                            
+                                                PLAYERS_MODEL
+                                                 .find()
+                                                 .exec(function(err, data) {
+                                                     err 
+                                                        ? reject(err) 
+                                                        : resolve(data);
+                                                   });
+                                             });
+                                           };
+
+                                           //Step 2: async promise handler
+                                           var callMyPromise = async () => {
+                                              
+                                              var result = await (myPromise());
+                                              message += "List of registered players for URM\n";
+                                                if(objects.length == 0) message = "The collection is empty.";
+                                                else {
+                                                    objects.forEach(function(document){
+                                                        message += "- Discord: '" + document.tag /*+ "' | Country: '" + document.country.name */+ "' | elo: '" + document.elo + "\n";
+                                                    });
+                                                }
+                                                message += "";
+                                                bot.sendMessage({
+                                                    to:channelID,
+                                                    message: message
+                                                });
+                                              //anything here is executed after result is resolved
+                                              return result;
+                                           };
+                                     
+                                           //Step 3: make the call
+                                           callMyPromise().then(function(result) {
+                                              
+                                           });
                                         break;
                                         case MATCHMAKING_COLLECTION:
                                             message += "List of matchmakings that are taking place now.\n";
@@ -700,20 +738,3 @@ bot.on('message', function (user, userID, channelID, message, evt) {
         });
     }
 });
-
-async function heavyLoad(message, channelID){
-    await PLAYERS_MODEL.find().exec(function(err, objects){
-    message += "List of registered players for URM\n";
-    if(objects.length == 0) message = "The collection is empty.";
-    else {
-        objects.forEach(function(document){
-            message += "- Discord: '" + document.tag /*+ "' | Country: '" + document.country.name */+ "' | elo: '" + document.elo + "\n";
-        });
-    }
-    message += "";
-    });
-    bot.sendMessage({
-        to:channelID,
-        message: message
-    });
-}
