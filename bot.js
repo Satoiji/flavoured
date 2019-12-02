@@ -160,25 +160,33 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                     if(access)
                     switch(params[FUNCTION]){
                         case PREFIX_RATING:
-                            syntax = "--rating {p} {v} {1|0}";
-                            var p = Number.parseFloat (params[1]);
-                            TB1 = p < 2000 ? 100 : 0;
-                            var v = Number.parseFloat (params[2]);
-                            TB2 = v < 2000 ? 100 : 0;
-                            var win = Number.parseFloat (params[3]);
-                            if(win == 0 || win == 1){
-                                var P = p + 300*(win - 1/(1 + Math.pow(10,(-(p-v)/1000)))) + (win)*TB1;
-                                var V = v + 300*((1-win) - 1/(1 + Math.pow(10,(-(v-p)/1000)))) + (1-win)*TB2;
-                                bot.sendMessage({
-                                    to: channelID,
-                                    message: "Old p: " + p + " - New p: " + Math.round(P) + "\nOld v: " + v + " - New v: " + Math.round(V)
-                                });
-                            } else {
-                                bot.sendMessage({
-                                    to: channelID,
-                                    message: "Stop breaking my bot"
-                                });
-                            }
+                            syntax = "--rating {@winner} {@losser}";
+                            PLAYERS_MODEL.find({$or : [{"discord_id": evt.d.mentions[0].id, "discord_id": evt.d.mentions[1].id}]}, function(err,players){
+                                if(err){ throwErrorMessage(channelID); return;}
+
+                                var p = Number.parseFloat ( players[0].elo);
+                                TB1 = p < 2000 ? 100 : 0;
+                                var v = Number.parseFloat ( players[1].elo);
+                                TB2 = v < 2000 ? 100 : 0;
+                                var win = 1;
+                                if(win == 0 || win == 1){
+                                    var P = p + 300*(win - 1/(1 + Math.pow(10,(-(p-v)/1000)))) + (win)*TB1;
+                                    var V = v + 300*((1-win) - 1/(1 + Math.pow(10,(-(v-p)/1000)))) + (1-win)*TB2;
+                                    player[0].elo = P;
+                                    player[1].elo = V;
+                                    player[0].save();
+                                    player[1].save();
+                                    bot.sendMessage({
+                                        to: channelID,
+                                        message: "Old p: " + p + " - New p: " + Math.round(P) + "\nOld v: " + v + " - New v: " + Math.round(V)
+                                    });
+                                } else {
+                                    bot.sendMessage({
+                                        to: channelID,
+                                        message: "Stop breaking my bot"
+                                    });
+                                }
+                            });
                         break;
                         case PREFIX_REGISTER:
                             syntax = "--register {@mention} {role}";
