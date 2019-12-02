@@ -166,7 +166,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 
                                     bot.sendMessage({
                                         to: channelID,
-                                        message: JSON.stringify(players)
+                                        message: JSON.stringify(evt.d.mentions)
                                     });
                                     return;
                                 var p = Number.parseFloat ( players[0].elo);
