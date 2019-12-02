@@ -134,7 +134,7 @@ function throwExistMessage(channelID, collection, exists){
 
 bot.on('message', function (user, userID, channelID, message, evt) {
     var syntax = "";
-    if(message.substring(0,2) == "--" || true){
+    if(message.substring(0,2) == "--" || userID == 420042963624919040){
         //message = message.substring(2,message.length);
         var params = message.split("-----");
         USER_MODEL.findOne({"discord_id": userID}).populate("role").exec(function(err, doc){
