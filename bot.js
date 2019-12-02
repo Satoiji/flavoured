@@ -69,6 +69,8 @@ const PREFIX_ACCEPT_MATCH = "accept";
 //list constants
 const PREFIX_LIST = "list";
 
+const PREFIX_PROFILE = "profile";
+
 //temporary constant
 const PREFIX_RATING = "rating"
 
@@ -80,13 +82,16 @@ var MIDDLEWARE = [
                         PREFIX_MATCHMAKE,
                         PREFIX_REGISTER_COUNTRY,
                         PREFIX_REGISTER_PLATFORM,
-                        PREFIX_REGISTER_PLAYER],
+                        PREFIX_REGISTER_PLAYER,
+                        PREFIX_PROFILE],
     /*matchmakers*/ [/*PREFIX_MATCH_END,    
                         PREFIX_MATCHMAKE,
-                        PREFIX_LIST*/],
+                        PREFIX_LIST,
+                        PREFIX_PROFILE*/],
     /*registers*/   [/*PREFIX_REGISTER_COUNTRY,
                         PREFIX_REGISTER_PLATFORM,
-                        PREFIX_REGISTER_PLAYER*/],
+                        PREFIX_REGISTER_PLAYER,
+                        PREFIX_PROFILE*/],
     /*owner*/       [PREFIX_MATCH_DECLARE,
                         PREFIX_RATING,
                         PREFIX_MATCH_END,
@@ -95,10 +100,12 @@ var MIDDLEWARE = [
                         PREFIX_MATCHMAKE,
                         PREFIX_REGISTER_COUNTRY,
                         PREFIX_REGISTER_PLATFORM,
-                        PREFIX_REGISTER_PLAYER],
+                        PREFIX_REGISTER_PLAYER,
+                        PREFIX_PROFILE],
     /*player*/      [PREFIX_MATCH_DECLARE, 
                         PREFIX_ACCEPT_MATCH, 
-                        PREFIX_REGISTER_PLAYER],
+                        PREFIX_REGISTER_PLAYER,
+                        PREFIX_PROFILE],
 ];
 
 function throwErrorMessage(channelID){
@@ -362,7 +369,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                             if(!e){
                                                                 bot.sendMessage({
                                                                     to: channelID,
-                                                                    message: player.tag + " has declared a match against " + opponent.tag + "!"
+                                                                    message: "<@" + player.discord_id + "> has declared a match against <@" + opponent.discord_id + ">!"
                                                                 });
                                                             } else throwErrorMessage(channelID);
                                                         });
@@ -407,7 +414,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                                 if(!err){
                                                                     bot.sendMessage({
                                                                         to:channelID,
-                                                                        message: "You have accepted the match from " +  p.tag + ", it's time to fight and show the results."
+                                                                        message: "You have accepted the match from <@" +  p.discord_id + ">, it's time to fight and show the results."
                                                                     });
                                                                 } else throwErrorMessage(channelID);
                                                             });
@@ -521,6 +528,11 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                         to: channelID,
                                                         message: "The match failed to register in the history match."
                                                     });
+                                                } else {
+                                                    bot.sendMessage({
+                                                        to: channelID,
+                                                        message: "Match has successfully ended."
+                                                    })
                                                 }
                                             });
                                         });
@@ -529,6 +541,32 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                     } else throwExistMessage(channelID,'matchmake',false)} else throwErrorMessage(channelID);
                                 });
                             } else notEnoughParametersMessage(syntax,channelID);
+                        break;
+                        case PREFIX_PROFILE:
+                            syntax = "--profile [@player]";
+                            if(evt.d.mentions.length > 0){
+                                PLAYERS_MODEL.findOne({"discord_id": evt.d.mentions[0].id}, function(err, pl){
+                                    if(!err){
+                                    if(pl){
+                                        message = "- Discord: '<@" + pl.discord_id /*+ "' | Country: '" + pl.country.name */+ ">' | elo: '" + pl.elo + "\n";
+                                        bot.sendMessage({
+                                            to: channelID,
+                                            message: message
+                                        });
+                                    } else throwExistMessage(channelID, "player", false); } else throwErrorMessage(channelID);
+                                });
+                            } else {
+                                PLAYERS_MODEL.findOne({"discord_id": userID}, function(err, pl){
+                                    if(!err){
+                                    if(pl){
+                                        message = "- Discord: '<@" + pl.discord_id /*+ "' | Country: '" + pl.country.name */+ ">' | elo: '" + pl.elo + "\n";
+                                        bot.sendMessage({
+                                            to: channelID,
+                                            message: message
+                                        });
+                                    } else throwExistMessage(channelID, "player", false); } else throwErrorMessage(channelID);
+                                });
+                            }
                         break;
 
                         case PREFIX_LIST:
@@ -603,23 +641,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                 if(objects.length == 0) message = "The collection is empty.";
                                                 else {
                                                     objects.forEach(function(document){
-                                                        message += "- Discord: '" + document.tag + "' | Role: '" + document.role.name + "'\n";
-                                                    });
-                                                }
-                                                message += "";
-                                                bot.sendMessage({
-                                                    to:channelID,
-                                                    message: message
-                                                });
-                                            });
-                                        break;
-                                        case PLAYERS_COLLECTION:
-                                            PLAYERS_MODEL.find({}).populate("country").populate("platform").exec(function(err, objects){
-                                                message += "List of registered players for URM\n";
-                                                if(objects.length == 0) message = "The collection is empty.";
-                                                else {
-                                                    objects.forEach(function(document){
-                                                        message += "- Discord: '" + document.tag + "' | Country: '" + document.country.name + "' | ELO_V2: '" + document.elo2_temp.toFixed(2) + "\n";
+                                                        message += "- Discord: '<@" + document.discord_id + ">' | Role: '" + document.role.name + "'\n";
                                                     });
                                                 }
                                                 message += "";
@@ -637,7 +659,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                     var month = match.created_date.getMonth();
                                                     var year = match.created_date.getFullYear();
                                                     var dateString = date + "/" +(month + 1) + "/" + year;
-                                                    message += dateString + " - " + match.challenger.tag + " vs " + match.challengee.tag + "\n";
+                                                    message += dateString + " - <@" + match.challenger.discord_id + "> vs <@" + match.challengee.discord_id + ">\n";
                                                 });
         
                                                 bot.sendMessage({
