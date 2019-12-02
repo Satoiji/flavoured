@@ -184,7 +184,15 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                         break;
                         case PREFIX_UPDATE:
                             syntax = "--update name @mention";
-                            PLAYERS_MODEL.findOneAndUpdate({"name": params[1]}, {"discord_id": evt.d.mentions[0].id});
+                            PLAYERS_MODEL.findOne({"name": params[1]}, function(err,res){
+                                res.discord_id = evt.d.mentions[0].id;
+                                res.save(function(err){
+                                    bot.sendMessage({
+                                        to:channelID,
+                                        message: "err: " + JSON.stringify(err)
+                                    })
+                                });
+                            });
                         break;      
                         case PREFIX_REGISTER:
                             syntax = "--register {@mention} {role}";
