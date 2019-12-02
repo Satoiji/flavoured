@@ -172,11 +172,11 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                     if(win == 0 || win == 1){
                                         var P = p + 300*(win - 1/(1 + Math.pow(10,(-(p-v)/1000)))) + (win)*TB1;
                                         var V = v + 300*((1-win) - 1/(1 + Math.pow(10,(-(v-p)/1000)))) + (1-win)*TB2;
-                                        players[0].elo = P;
+                                        players[0].elo = Math.round(P);
                                         players[0].wins++;
                                         players[0].games_played++;
                                         players[0].last_game_date = Date.now();
-                                        players[1].elo = V;
+                                        players[1].elo = Math.round(V);
                                         players[1].losses++;
                                         players[1].games_played++;
                                         players[1].last_game_date = Date.now();
