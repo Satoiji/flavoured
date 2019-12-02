@@ -369,7 +369,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                             if(!e){
                                                                 bot.sendMessage({
                                                                     to: channelID,
-                                                                    message: player.tag + " has declared a match against " + opponent.tag + "!"
+                                                                    message: "<@" + player.discord_id + "> has declared a match against <@" + opponent.discord_id + ">!"
                                                                 });
                                                             } else throwErrorMessage(channelID);
                                                         });
@@ -414,7 +414,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                                 if(!err){
                                                                     bot.sendMessage({
                                                                         to:channelID,
-                                                                        message: "You have accepted the match from " +  p.tag + ", it's time to fight and show the results."
+                                                                        message: "You have accepted the match from <@" +  p.discord_id + ">, it's time to fight and show the results."
                                                                     });
                                                                 } else throwErrorMessage(channelID);
                                                             });
@@ -548,7 +548,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                 PLAYERS_MODEL.findOne({"discord_id": evt.d.mentions[0].id}, function(err, pl){
                                     if(!err){
                                     if(pl){
-                                        message = "- Discord: '" + pl.tag /*+ "' | Country: '" + pl.country.name */+ "' | elo: '" + pl.elo + "\n";
+                                        message = "- Discord: '<@" + pl.discord_id /*+ "' | Country: '" + pl.country.name */+ ">' | elo: '" + pl.elo + "\n";
                                         bot.sendMessage({
                                             to: channelID,
                                             message: message
@@ -559,7 +559,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                 PLAYERS_MODEL.findOne({"discord_id": userID}, function(err, pl){
                                     if(!err){
                                     if(pl){
-                                        message = "- Discord: '" + pl.tag /*+ "' | Country: '" + pl.country.name */+ "' | elo: '" + pl.elo + "\n";
+                                        message = "- Discord: '<@" + pl.discord_id /*+ "' | Country: '" + pl.country.name */+ ">' | elo: '" + pl.elo + "\n";
                                         bot.sendMessage({
                                             to: channelID,
                                             message: message
@@ -641,7 +641,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                 if(objects.length == 0) message = "The collection is empty.";
                                                 else {
                                                     objects.forEach(function(document){
-                                                        message += "- Discord: '" + document.tag + "' | Role: '" + document.role.name + "'\n";
+                                                        message += "- Discord: '<@" + document.discord_id + ">' | Role: '" + document.role.name + "'\n";
                                                     });
                                                 }
                                                 message += "";
@@ -651,22 +651,6 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                 });
                                             });
                                         break;
-                                        /*case PLAYERS_COLLECTION:
-                                            PLAYERS_MODEL.find({})/*.populate("country").populate("platform")*//*.exec(function(err, objects){
-                                                message += "List of registered players for URM\n";
-                                                if(objects.length == 0) message = "The collection is empty.";
-                                                else {
-                                                    objects.forEach(function(document){
-                                                        message += "- Discord: '" + document.tag /*+ "' | Country: '" + document.country.name */+ "' | elo: '" + document.elo + "\n";
-                                                    /*});
-                                                }
-                                                message += "";
-                                                bot.sendMessage({
-                                                    to:channelID,
-                                                    message: message
-                                                });
-                                            });
-                                        break;*/
                                         case MATCHMAKING_COLLECTION:
                                             message += "List of matchmakings that are taking place now.\n";
                                             MATCHMAKING_MODEL.find({}).populate("challenger").populate("challengee").exec(function(err, matches){
@@ -675,7 +659,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                     var month = match.created_date.getMonth();
                                                     var year = match.created_date.getFullYear();
                                                     var dateString = date + "/" +(month + 1) + "/" + year;
-                                                    message += dateString + " - " + match.challenger.tag + " vs " + match.challengee.tag + "\n";
+                                                    message += dateString + " - <@" + match.challenger.discord_id + "> vs <@" + match.challengee.discord_id + ">\n";
                                                 });
         
                                                 bot.sendMessage({
