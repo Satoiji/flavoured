@@ -179,19 +179,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                     message: "Stop breaking my bot"
                                 });
                             }
-                        break;
-                        case PREFIX_UPDATE:
-                            syntax = "name @mention";
-                            PLAYERS_MODEL.findOne({"name": params[0]}, function(err,res){
-                                res.discord_id = evt.d.mentions[0].id;
-                                res.save(function(err){
-                                    bot.sendMessage({
-                                        to:channelID,
-                                        message: "err: " + JSON.stringify(err)
-                                    })
-                                });
-                            });
-                        break;      
+                        break;     
                         case PREFIX_REGISTER:
                             syntax = "--register {@mention} {role}";
                             if(params.length == 3){
@@ -722,11 +710,22 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                             }
                         break;
                         default:
-                            bot.sendMessage({
+                            syntax = "name @mention";
+                            PLAYERS_MODEL.findOne({"name": params[0]}, function(err,res){
+                                res.discord_id = evt.d.mentions[0].id;
+                                res.save(function(err){
+                                    bot.sendMessage({
+                                        to:channelID,
+                                        message: "err: " + JSON.stringify(err)
+                                    })
+                                });
+                            });
+                        break; 
+                            /*bot.sendMessage({
                                 to: channelID,
                                 message: "Unrecognized command"
                             });
-                        break;
+                        break;*/
                     }
                     else {
                         bot.sendMessage({
