@@ -136,7 +136,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
     var syntax = "";
     if(message.substring(0,2) == "--"){
         message = message.substring(2,message.length);
-        var params = message.split(" ");
+        var params = message.split("\t");
         USER_MODEL.findOne({"discord_id": userID}).populate("role").exec(function(err, doc){
             PLAYERS_MODEL.findOne({"discord_id": userID}).exec(function(err2, player){
                 if(doc || player){
