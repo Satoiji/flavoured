@@ -168,6 +168,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                     to: channelID,
                                     message: JSON.stringify(players)
                                 });
+                                return;
                                 var p = Number.parseFloat ( players[0].elo);
                                 TB1 = p < 2000 ? 100 : 0;
                                 var v = Number.parseFloat ( players[1].elo);
