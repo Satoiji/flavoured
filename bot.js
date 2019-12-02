@@ -72,7 +72,7 @@ const PREFIX_LIST = "list";
 const PREFIX_PROFILE = "profile";
 
 //temporary constant
-const PREFIX_RATING = "rating";
+const PREFIX_RATING = "rating"
 
 //middleware constants
 var MIDDLEWARE = [
@@ -134,12 +134,12 @@ function throwExistMessage(channelID, collection, exists){
 
 bot.on('message', function (user, userID, channelID, message, evt) {
     var syntax = "";
-    if(message.substring(0,2) == "--" || userID == 420042963624919040){
-        //message = message.substring(2,message.length);
-        var params = message.split("-----");
+    if(message.substring(0,2) == "--"){
+        message = message.substring(2,message.length);
+        var params = message.split(" ");
         USER_MODEL.findOne({"discord_id": userID}).populate("role").exec(function(err, doc){
             PLAYERS_MODEL.findOne({"discord_id": userID}).exec(function(err2, player){
-                if(doc || player){  
+                if(doc || player){
                     var access = false;
                     doc.role.forEach(function(role){
                         MIDDLEWARE[role.priviledge-1].forEach(function(value){
@@ -157,7 +157,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                             }
                         });
                     }
-                    if(access || userID == "420042963624919040")
+                    if(access)
                     switch(params[FUNCTION]){
                         case PREFIX_RATING:
                             syntax = "--rating {p} {v} {1|0}";
@@ -179,7 +179,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                     message: "Stop breaking my bot"
                                 });
                             }
-                        break;     
+                        break;
                         case PREFIX_REGISTER:
                             syntax = "--register {@mention} {role}";
                             if(params.length == 3){
@@ -710,22 +710,11 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                             }
                         break;
                         default:
-                            syntax = "name @mention";
-                            PLAYERS_MODEL.findOne({"name": params[0]}, function(err,res){
-                                res.discord_id = evt.d.mentions[0].id;
-                                res.save(function(err){
-                                    bot.sendMessage({
-                                        to:channelID,
-                                        message: "err: " + JSON.stringify(err)
-                                    })
-                                });
-                            });
-                        break; 
-                            /*bot.sendMessage({
+                            bot.sendMessage({
                                 to: channelID,
                                 message: "Unrecognized command"
                             });
-                        break;*/
+                        break;
                     }
                     else {
                         bot.sendMessage({
