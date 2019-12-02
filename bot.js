@@ -164,6 +164,11 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                             PLAYERS_MODEL.find({$or : [{"discord_id": evt.d.mentions[0].id, "discord_id": evt.d.mentions[1].id}]}, function(err,players){
                                 if(err){ throwErrorMessage(channelID); return;}
 
+                                    bot.sendMessage({
+                                        to: channelID,
+                                        message: JSON.stringify(players)
+                                    });
+                                    return;
                                 var p = Number.parseFloat ( players[0].elo);
                                 TB1 = p < 2000 ? 100 : 0;
                                 var v = Number.parseFloat ( players[1].elo);
