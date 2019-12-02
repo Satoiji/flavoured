@@ -161,7 +161,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                     switch(params[FUNCTION]){
                         case PREFIX_RATING:
                             syntax = "--rating {@winner} {@losser}";
-                            PLAYERS_MODEL.find($or: [{"discord_id":evt.d.mentions[0].id},{"discord_id":evt.d.mentions[1].id}]}, function(err,players){
+                            PLAYERS_MODEL.find({$or: [{"discord_id":evt.d.mentions[0].id},{"discord_id":evt.d.mentions[1].id}]}, function(err,players){
                                 if(err){ throwErrorMessage(channelID); return;}
 
                                     bot.sendMessage({
