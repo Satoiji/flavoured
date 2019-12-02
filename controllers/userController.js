@@ -32,7 +32,7 @@ function fill(){
                         wins: wins,
                         losses: lose,
                         elo: elo,
-                        hours: hours,
+                        games_played: total
                     }
                     PLAYERS_MODEL.findAndUpdate({"name":name}, coll);
                 }
