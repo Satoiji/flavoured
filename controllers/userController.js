@@ -34,7 +34,7 @@ function fill(){
                         elo: elo,
                         games_played: total
                     }
-                    PLAYERS_MODEL.findAndUpdate({"name":name}, coll);
+                    PLAYERS_MODEL.findOneAndUpdate({"name":name}, coll);
                 }
                 console.log(PLAYERS_MODEL.insertMany(players));
             }
