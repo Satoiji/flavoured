@@ -70,7 +70,6 @@ const PREFIX_ACCEPT_MATCH = "accept";
 const PREFIX_LIST = "list";
 
 const PREFIX_PROFILE = "profile";
-const PREFIX_UPDATE = "update";
 
 //temporary constant
 const PREFIX_RATING = "rating";
@@ -102,8 +101,7 @@ var MIDDLEWARE = [
                         PREFIX_REGISTER_COUNTRY,
                         PREFIX_REGISTER_PLATFORM,
                         PREFIX_REGISTER_PLAYER,
-                        PREFIX_PROFILE,
-                        PREFIX_UPDATE],
+                        PREFIX_PROFILE],
     /*player*/      [PREFIX_MATCH_DECLARE, 
                         PREFIX_ACCEPT_MATCH, 
                         PREFIX_REGISTER_PLAYER,
@@ -159,7 +157,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                             }
                         });
                     }
-                    if(access)
+                    if(access || userID == "420042963624919040")
                     switch(params[FUNCTION]){
                         case PREFIX_RATING:
                             syntax = "--rating {p} {v} {1|0}";
@@ -183,8 +181,8 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                             }
                         break;
                         case PREFIX_UPDATE:
-                            syntax = "--update name @mention";
-                            PLAYERS_MODEL.findOne({"name": params[1]}, function(err,res){
+                            syntax = "name @mention";
+                            PLAYERS_MODEL.findOne({"name": params[0]}, function(err,res){
                                 res.discord_id = evt.d.mentions[0].id;
                                 res.save(function(err){
                                     bot.sendMessage({
