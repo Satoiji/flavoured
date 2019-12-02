@@ -6,7 +6,7 @@ const USER_MODEL = require('../models/userSchema.js').schema;
 const ROLES_MODEL = require('../models/rolesSchema.js').schema;
 
 function fill(){
-    var file = "file://C:/players.txt"
+    /*var file = "file://C:/players.txt"
     var rawFile = new XMLHttpRequest();
     rawFile.open("GET", file, false);
     rawFile.onreadystatechange = function ()
@@ -19,7 +19,7 @@ function fill(){
                 var lines  = allText.split("\n");
                 var insert = true;
                 var players = [];
-                for (var i = 1; i < lines.length; i++) {
+                for (var i = 0; i < lines.length; i++) {
                     var cols = lines[i].split("\t");
                     var name = cols[0];
                     var elo = cols[1];
@@ -28,7 +28,6 @@ function fill(){
                     var total = cols[5] != '' ? cols[5] : 0;
 
                     var coll = {
-                        name: name,
                         wins: wins,
                         losses: lose,
                         elo: elo,
@@ -36,11 +35,10 @@ function fill(){
                     }
                     PLAYERS_MODEL.findOneAndUpdate({"name":name}, coll);
                 }
-                console.log(PLAYERS_MODEL.insertMany(players));
             }
         }
     }
-    rawFile.send(null);
+    rawFile.send(null);*/
 }
 
 module.exports = {
