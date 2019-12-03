@@ -166,7 +166,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                 PLAYERS_MODEL.findOne({"discord_id":evt.d.mentions[1].id}, function(err2,losser){
                                     bot.sendMessage({
                                         to: channelID,
-                                        message: "evt: " + evt.d.mentions
+                                        message: "evt: " + JSON.stringify(evt.d.mentions)
                                     });
                                     /*if(err1 || err2){ throwErrorMessage(channelID); return;}
                                     if(!winner || !losser){ throwExistMessage(channelID, "player", false); return;}
