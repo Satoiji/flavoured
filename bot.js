@@ -162,27 +162,29 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                         case PREFIX_RATING:
                             syntax = "--rating {@winner} {@losser}";
                             if (evt.d.mentions.length == 2) {
-                                PLAYERS_MODEL.find({$or: [{"discord_id":evt.d.mentions[0].id},{"discord_id":evt.d.mentions[1].id}]}, function(err,players){
-                                    if(err){ throwErrorMessage(channelID); return;}
-                                    var p = Number.parseFloat ( players[0].elo);
+                                PLAYERS_MODEL.findOne({"discord_id":evt.d.mentions[0].id}, function(err1,winner){
+                                PLAYERS_MODEL.findOne({"discord_id":evt.d.mentions[1].id}, function(err2,losser){
+                                    if(err1 || err2){ throwErrorMessage(channelID); return;}
+                                    if(!winner || !losser){ throwExistMessage(channelID, "player", false); return;}
+                                    var p = Number.parseFloat ( winner.elo);
                                     TB1 = p < 2000 ? 100 : 0;
-                                    var v = Number.parseFloat ( players[1].elo);
+                                    var v = Number.parseFloat ( losser.elo);
                                     TB2 = v < 2000 ? 100 : 0;
                                     var win = 1;
                                     if(win == 0 || win == 1){
                                         var P = p + 300*(win - 1/(1 + Math.pow(10,(-(p-v)/1000)))) + (win)*TB1;
                                         var V = v + 300*((1-win) - 1/(1 + Math.pow(10,(-(v-p)/1000)))) + (1-win)*TB2;
-                                        players[0].elo = Math.round(P);
-                                        players[0].wins++;
-                                        players[0].games_played++;
-                                        players[0].last_game_date = Date.now();
-                                        players[1].elo = Math.round(V);
-                                        players[1].losses++;
-                                        players[1].games_played++;
-                                        players[1].last_game_date = Date.now();
+                                        winner.elo = Math.round(P);
+                                        winner.wins++;
+                                        winner.games_played++;
+                                        winner.last_game_date = Date.now();
+                                        losser.elo = Math.round(V);
+                                        losser.losses++;
+                                        losser.games_played++;
+                                        losser.last_game_date = Date.now();
 
-                                        players[0].save();
-                                        players[1].save();
+                                        winner.save();
+                                        losser.save();
                                         
                                         bot.sendMessage({
                                             to: channelID,
@@ -194,6 +196,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                             message: "Stop breaking my bot"
                                         });
                                     }
+                                });
                                 });
                             } else notEnoughParametersMessage(syntax,channelID);
                         break;
