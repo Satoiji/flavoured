@@ -164,13 +164,9 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                             if (evt.d.mentions.length == 2) {
                                 var wId = params[1].substring(2,params[1].length-1);
                                 var lId = params[2].substring(2,params[2].length-1);
-                                PLAYERS_MODEL.findOne({"discord_id":evt.d.mentions[0].id}, function(err1,winner){
-                                PLAYERS_MODEL.findOne({"discord_id":evt.d.mentions[1].id}, function(err2,losser){
-                                    bot.sendMessage({
-                                        to: channelID,
-                                        message: "```winner: " + wId + "losser: " + lId + "```"
-                                    });
-                                    /*if(err1 || err2){ throwErrorMessage(channelID); return;}
+                                PLAYERS_MODEL.findOne({"discord_id":wId}, function(err1,winner){
+                                PLAYERS_MODEL.findOne({"discord_id":lId}, function(err2,losser){
+                                    if(err1 || err2){ throwErrorMessage(channelID); return;}
                                     if(!winner || !losser){ throwExistMessage(channelID, "player", false); return;}
                                     var p = Number.parseFloat ( winner.elo);
                                     TB1 = p < 2000 ? 100 : 0;
@@ -201,7 +197,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                             to: channelID,
                                             message: "Stop breaking my bot"
                                         });
-                                    }*/
+                                    }
                                 });
                                 });
                             } else notEnoughParametersMessage(syntax,channelID);
