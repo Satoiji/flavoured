@@ -162,11 +162,13 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                         case PREFIX_RATING:
                             syntax = "--rating {@winner} {@losser}";
                             if (evt.d.mentions.length == 2) {
+                                var wId = params[1].substring(2,params[1].length-1);
+                                var lId = params[2].substring(2,params[2].length-1);
                                 PLAYERS_MODEL.findOne({"discord_id":evt.d.mentions[0].id}, function(err1,winner){
                                 PLAYERS_MODEL.findOne({"discord_id":evt.d.mentions[1].id}, function(err2,losser){
                                     bot.sendMessage({
                                         to: channelID,
-                                        message: "```winner: " + params[1] + "losser: " + params[2] + "```"
+                                        message: "```winner: " + wId + "losser: " + lId + "```"
                                     });
                                     /*if(err1 || err2){ throwErrorMessage(channelID); return;}
                                     if(!winner || !losser){ throwExistMessage(channelID, "player", false); return;}
