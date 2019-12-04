@@ -166,44 +166,34 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                 wId = wId.indexOf('!') >= 0 ? wId.substring(1) : wId;
                                 var lId = params[2].substring(2,params[2].length-1);
                                 lId = lId.indexOf('!') >= 0 ? lId.substring(1) : lId;
-                                bot.sendMessage({
-                                    to:channelID,
-                                    message: "```Player xxxprod: "+wId+" Player tropiq: "+lId+"```"
-                                });
                                 PLAYERS_MODEL.findOne({"discord_id":wId}, function(err1,winner){
                                 PLAYERS_MODEL.findOne({"discord_id":lId}, function(err2,losser){
-                                    /*if(err1 || err2){ throwErrorMessage(channelID); return;}
+                                    if(err1 || err2){ throwErrorMessage(channelID); return;}
                                     if(!winner || !losser){ throwExistMessage(channelID, "player", false); return;}
                                     var p = Number.parseFloat ( winner.elo);
                                     TB1 = p < 2000 ? 100 : 0;
                                     var v = Number.parseFloat ( losser.elo);
                                     TB2 = v < 2000 ? 100 : 0;
                                     var win = 1;
-                                    if(win == 0 || win == 1){
-                                        var P = p + 300*(win - 1/(1 + Math.pow(10,(-(p-v)/1000)))) + (win)*TB1;
-                                        var V = v + 300*((1-win) - 1/(1 + Math.pow(10,(-(v-p)/1000)))) + (1-win)*TB2;
-                                        winner.elo = Math.round(P);
-                                        winner.wins++;
-                                        winner.games_played++;
-                                        winner.last_game_date = Date.now();
-                                        losser.elo = Math.round(V);
-                                        losser.losses++;
-                                        losser.games_played++;
-                                        losser.last_game_date = Date.now();
 
-                                        winner.save();
-                                        losser.save();
-                                        
-                                        bot.sendMessage({
-                                            to: channelID,
-                                            message: "Old p: " + p + " - New p: " + Math.round(P) + "\nOld v: " + v + " - New v: " + Math.round(V)
-                                        });
-                                    } else {
-                                        bot.sendMessage({
-                                            to: channelID,
-                                            message: "Stop breaking my bot"
-                                        });
-                                    }*/
+                                    var P = p + 300*(win - 1/(1 + Math.pow(10,(-(p-v)/1000)))) + (win)*TB1;
+                                    var V = v + 300*((1-win) - 1/(1 + Math.pow(10,(-(v-p)/1000)))) + (1-win)*TB2;
+                                    winner.elo = Math.round(P);
+                                    winner.wins++;
+                                    winner.games_played++;
+                                    winner.last_game_date = Date.now();
+                                    losser.elo = Math.round(V);
+                                    losser.losses++;
+                                    losser.games_played++;
+                                    losser.last_game_date = Date.now();
+
+                                    winner.save();
+                                    losser.save();
+                                    
+                                    bot.sendMessage({
+                                        to: channelID,
+                                        message: "Old p: " + p + " - New p: " + Math.round(P) + "\nOld v: " + v + " - New v: " + Math.round(V)
+                                    });
                                 });
                                 });
                             } else notEnoughParametersMessage(syntax,channelID);
