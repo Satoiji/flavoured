@@ -163,13 +163,15 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                             syntax = "--rating {@winner} {@losser}";
                             if (evt.d.mentions.length == 2) {
                                 var wId = params[1].substring(2,params[1].length-1);
+                                wId = wId.indexOf('!') >= 0 ? wId.substring(1) : wId;
                                 var lId = params[2].substring(2,params[2].length-1);
+                                lId = lId.indexOf('!') >= 0 ? lId.substring(1) : lId;
+                                bot.sendMessage({
+                                    to:channelID,
+                                    message: "```Player xxxprod: "+wId+" Player tropiq: "+lId+"```"
+                                });
                                 PLAYERS_MODEL.findOne({"discord_id":wId}, function(err1,winner){
                                 PLAYERS_MODEL.findOne({"discord_id":lId}, function(err2,losser){
-                                    bot.sendMessage({
-                                        to:channelID,
-                                        message: "```Player xxxprod: "+params[1]+" Player tropiq: "+params[2]+"```"
-                                    });
                                     /*if(err1 || err2){ throwErrorMessage(channelID); return;}
                                     if(!winner || !losser){ throwExistMessage(channelID, "player", false); return;}
                                     var p = Number.parseFloat ( winner.elo);
