@@ -133,7 +133,7 @@ function throwExistMessage(channelID, collection, exists){
 
 //mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
-bot.on('message', function (user, userID, channelID, message, evt) {
+bot.on('message', async function (user, userID, channelID, message, evt) {
     var syntax = "";
     if(message.substring(0,2) == "--"){
         message = message.substring(2,message.length);
@@ -714,42 +714,44 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                         syntax = '--list history {mention? [yes|no]} [@player [limit]]';
                                         message += "List of matchmaking history.\n";
                                         message += "```Note: for a better check of history use: "+ syntax+ "\n```";
-                                        var filter = {};
                                         var mention = params[2] == 'yes' ? true : params[2] == 'no' ? false : throwErrorMessage(channelID);
-                                        if(params.length >= 4){
+                                        var hasPlayer = params.length >= 4 ? true : false;
+                                    
+                                        var filterPlayer = {};
+                                        if(hasPlayer){
                                             var discord_id = params[3].substring(2,params[3].length-1);
                                             discord_id = discord_id.indexOf('!') >= 0 ? discord_id.substring(1) : discord_id;
-                                            bot.sendMessage({to:channelID,message: discord_id});
-                                            PLAYERS_MODEL.findOne({'discord_id': discord_id}, function(err,player){
-                                                bot.sendMessage({to:channelID,message: JSON.stringify(err) + " p " + JSON.stringify(player)});
-                                                if(!err){
-                                                if(player){
-                                                    filter = {$or: [{'challenger': player.discord_id},{'challengee': player.discord_id}]};
-                                                } else throwExistMessage(channelID, 'player', false); } else throwErrorMessage(channelID);
-                                            });
+                                            filterPlayer = {'discord_id': discord_id};
                                         }
-                                        bot.sendMessage({to:channelID,message: "filter" + JSON.stringify(filter)});
-                                        var promise_matchmaking = MATCHMAKING_HISTORY_MODEL.find({filter}).populate('challenger').populate('challengee');
-                                        if(params.length == 5)
-                                            promise_matchmaking.limit(params[3]);
-                                        else
-                                            promise_matchmaking.limit(10);
-
-                                        promise_matchmaking.sort({date: 1}).exec(function(err, matches){
+                                        PLAYERS_MODEL.findOne(filterPlayer, function(err,player){
                                             if(!err){
-                                            if(!matches){
-                                                matches.forEach(function(match){
-                                                    challenger = mention ? "<@" + match.challenger.discord_id + ">" : match.challenger.name;
-                                                    challengee = mention ? "<@" + match.challengee.discord_id + ">" : match.challengee.name;
-                                                    winner = mention ? "<@" + match.winner.discord_id + ">" : match.winner.name;
-                                                    message += match.game_date+" "+challenger+" vs "+challengee+" resulted in "+winner+"\n";
+                                            if(player || !hasPlayer){
+                                                var filter = hastPlayer ? {$or: [{'challenger': player.discord_id},{'challengee': player.discord_id}]} : {};
+
+                                                var promise_matchmaking = MATCHMAKING_HISTORY_MODEL.find(filter).populate('challenger').populate('challengee');
+                                                if(params.length == 5)
+                                                    promise_matchmaking.limit(params[3]);
+                                                else
+                                                    promise_matchmaking.limit(10);
+
+                                                promise_matchmaking.sort({date: 1}).exec(function(err, matches){
+                                                    if(!err){
+                                                    if(!matches){
+                                                        matches.forEach(function(match){
+                                                            challenger = mention ? "<@" + match.challenger.discord_id + ">" : match.challenger.name;
+                                                            challengee = mention ? "<@" + match.challengee.discord_id + ">" : match.challengee.name;
+                                                            winner = mention ? "<@" + match.winner.discord_id + ">" : match.winner.name;
+                                                            message += match.game_date+" "+challenger+" vs "+challengee+" resulted in "+winner+"\n";
+                                                        });
+                                                        bot.sendMessage({
+                                                            to:channelID,
+                                                            message: message
+                                                        })
+                                                    } else bot.sendMessage({to: channelID, message: 'The player has not recorded any finished challenges'});} else throwErrorMessage(channelID);
                                                 });
-                                                bot.sendMessage({
-                                                    to:channelID,
-                                                    message: message
-                                                })
-                                            } else bot.sendMessage({to: channelID, message: 'The player has not recorded any finished challenges'});} else throwErrorMessage(channelID);
+                                            } else throwExistMessage(channelID, 'player', false); } else throwErrorMessage(channelID);
                                         });
+                                        
                                     break;
                                     case "commands":
                                         message+= "List of commands: \n";
