@@ -620,7 +620,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                         message: ""+
                                         "```Available collections: \n"+
                                         "1) " + ROLES_COLLECTION+ ", Available roles\n"+
-                                        "2) " + PLATFORMS_COLLECTIMATCHMAKING_HISTORY_COLLECTIONON+", Available platforms\n"+
+                                        "2) " + PLATFORMS_COLLECTION+", Available platforms\n"+
                                         "3) " + COUNTRIES_COLLECTION+", Available countries\n"+
                                         "4) " + USERS_COLLECTION+", Available users\n"+
                                         "5) " + MATCHMAKING_COLLECTION+", Matchmakings in progress\n"+
