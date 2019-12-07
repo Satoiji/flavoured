@@ -737,7 +737,7 @@ bot.on('message', async function (user, userID, channelID, message, evt) {
                                                 promise_matchmaking.sort({date: 1}).exec(function(err, matches){
                                                     bot.sendMessage({to:channelID, message: 'Matches err: '+JSON.stringify(err)});
                                                     if(!err){
-                                                    if(!matches){
+                                                    if(matches){
                                                         matches.forEach(function(match){
                                                             challenger = mention ? "<@" + match.challenger.discord_id + ">" : match.challenger.name;
                                                             challengee = mention ? "<@" + match.challengee.discord_id + ">" : match.challengee.name;
