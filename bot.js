@@ -13,6 +13,7 @@ const ROLES_MODEL = require('./models/rolesSchema.js').schema;
 const MATCHMAKING_MODEL = require('./models/matchmakingSchema.js').schema;
 const MATCHMAKING_HISTORY_MODEL = require('./models/matchmakingHistorySchema.js').schema;
 const DECLARE_MATCHES_MODEL = require('./models/declareMatchesSchema.js').schema;
+const CONSTANTS = require('./bot/constants.js').PREFIX;
 
 //var uri = "mongodb://g_herrera:"+auth.mongo+"@flavoured-classics-shard-00-00-dmotk.mongodb.net:27017,flavoured-classics-shard-00-01-dmotk.mongodb.net:27017,flavoured-classics-shard-00-02-dmotk.mongodb.net:27017/test?ssl=true&replicaSet=Flavoured-Classics-shard-0&authSource=admin&retryWrites=true&w=majority";
 const uri = "mongodb+srv://g_herrera:"+auth.mongo+"@flavoured-classics-dmotk.mongodb.net/URM_collection?retryWrites=true&w=majority";
@@ -23,89 +24,38 @@ var bot = new Discord.Client({
    autorun: true
 });
 
-const FUNCTION = 0;
-const USERS_COLLECTION = "users";
-const COUNTRIES_COLLECTION = "countries";
-const DECLARE_MATCHES_COLLECTION = "declare_matches";
-const MATCHMAKING_COLLECTION = "matchmaking";
-const PLATFORMS_COLLECTION = "platforms";
-const PLAYERS_COLLECTION = "players";
-const ROLES_COLLECTION = "roles";
-
-//regPlayer constants
-const PREFIX_REGISTER_PLAYER = "regPlayer";
-const REGISTER_TAG_POSITION = 1;
-const REGISTER_NAME_POSITION = 2;
-const REGISTER_COUNTRY_CODE_POSITION = 3;
-const REGISTER_PLATFORM_POSITION = 4;
-const REGISTER_HOURS_POSITION = 5;
-
-//register constants
-const PREFIX_REGISTER = "register";
-const REGISTER_ROLE_POSITION = 2;
-
-//regCountry constants
-const PREFIX_REGISTER_COUNTRY = "regCountry";
-const COUNTRY_NAME = 1;
-const COUNTRY_CODE = 2;
-
-//regPlatform constants
-const PREFIX_REGISTER_PLATFORM = "regPlatform";
-const PLATFORM_NAME = 1;
-const PLATFORM_CODE = 2;
-
-//matchmaking constants
-const PREFIX_MATCHMAKE = "matchmake";
-
-//matchend constants
-const PREFIX_MATCH_END = "end-match";
-
-//match declare constants
-const PREFIX_MATCH_DECLARE = "challenge";
-
-//match accept constants
-const PREFIX_ACCEPT_MATCH = "accept";
-
-//list constants
-const PREFIX_LIST = "list";
-
-const PREFIX_PROFILE = "profile";
-
-//temporary constant
-const PREFIX_RATING = "rating"
-
 //middleware constants
 var MIDDLEWARE = [
-    /*admins*/      [PREFIX_RATING,
-                        PREFIX_MATCH_END,
-                        PREFIX_LIST,
-                        PREFIX_MATCHMAKE,
-                        PREFIX_REGISTER_COUNTRY,
-                        PREFIX_REGISTER_PLATFORM,
-                        PREFIX_REGISTER_PLAYER,
-                        PREFIX_PROFILE],
-    /*matchmakers*/ [/*PREFIX_MATCH_END,    
-                        PREFIX_MATCHMAKE,
-                        PREFIX_LIST,
-                        PREFIX_PROFILE*/],
-    /*registers*/   [/*PREFIX_REGISTER_COUNTRY,
-                        PREFIX_REGISTER_PLATFORM,
-                        PREFIX_REGISTER_PLAYER,
-                        PREFIX_PROFILE*/],
-    /*owner*/       [PREFIX_MATCH_DECLARE,
-                        PREFIX_RATING,
-                        PREFIX_MATCH_END,
-                        PREFIX_REGISTER,
-                        PREFIX_LIST,
-                        PREFIX_MATCHMAKE,
-                        PREFIX_REGISTER_COUNTRY,
-                        PREFIX_REGISTER_PLATFORM,
-                        PREFIX_REGISTER_PLAYER,
-                        PREFIX_PROFILE],
-    /*player*/      [PREFIX_MATCH_DECLARE, 
-                        PREFIX_ACCEPT_MATCH, 
-                        PREFIX_REGISTER_PLAYER,
-                        PREFIX_PROFILE],
+    /*admins*/      [CONSTANTS.PREFIX_RATING,
+                        CONSTANTS.PREFIX_MATCH_END,
+                        CONSTANTS.PREFIX_LIST,
+                        CONSTANTS.PREFIX_MATCHMAKE,
+                        CONSTANTS.PREFIX_REGISTER_COUNTRY,
+                        CONSTANTS.PREFIX_REGISTER_PLATFORM,
+                        CONSTANTS.PREFIX_REGISTER_PLAYER,
+                        CONSTANTS.PREFIX_PROFILE],
+    /*matchmakers*/ [/*CONSTANTS.PREFIX_MATCH_END,    
+                        CONSTANTS.PREFIX_MATCHMAKE,
+                        CONSTANTS.PREFIX_LIST,
+                        CONSTANTS.PREFIX_PROFILE*/],
+    /*registers*/   [/*CONSTANTS.PREFIX_REGISTER_COUNTRY,
+                        CONSTANTS.PREFIX_REGISTER_PLATFORM,
+                        CONSTANTS.PREFIX_REGISTER_PLAYER,
+                        CONSTANTS.PREFIX_PROFILE*/],
+    /*owner*/       [CONSTANTS.PREFIX_MATCH_DECLARE,
+                        CONSTANTS.PREFIX_RATING,
+                        CONSTANTS.PREFIX_MATCH_END,
+                        CONSTANTS.PREFIX_REGISTER,
+                        CONSTANTS.PREFIX_LIST,
+                        CONSTANTS.PREFIX_MATCHMAKE,
+                        CONSTANTS.PREFIX_REGISTER_COUNTRY,
+                        CONSTANTS.PREFIX_REGISTER_PLATFORM,
+                        CONSTANTS.PREFIX_REGISTER_PLAYER,
+                        CONSTANTS.PREFIX_PROFILE],
+    /*player*/      [CONSTANTS.PREFIX_MATCH_DECLARE, 
+                        CONSTANTS.PREFIX_ACCEPT_MATCH, 
+                        CONSTANTS.PREFIX_REGISTER_PLAYER,
+                        CONSTANTS.PREFIX_PROFILE],
 ];
 
 function throwErrorMessage(channelID){
@@ -143,7 +93,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                     var access = false;
                     doc.role.forEach(function(role){
                         MIDDLEWARE[role.priviledge-1].forEach(function(value){
-                            if(params[FUNCTION] == value||params[FUNCTION] == "commands"){
+                            if(params[CONSTANTS.FUNCTION] == value||params[CONSTANTS.FUNCTION] == "commands"){
                                 access = true;
                                 return;
                             }
@@ -151,15 +101,15 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                     });
                     if(player){
                         MIDDLEWARE[4].forEach(function(value){
-                            if(params[FUNCTION] == value){
+                            if(params[CONSTANTS.FUNCTION] == value){
                                 access = true;
                                 return;
                             }
                         });
                     }
                     if(access)
-                    switch(params[FUNCTION]){
-                        case PREFIX_RATING:
+                    switch(params[CONSTANTS.FUNCTION]){
+                        case CONSTANTS.PREFIX_RATING:
                             syntax = "--rating {@winner} {@losser}";
                             if (evt.d.mentions.length == 2) {
                                 var wId = params[1].substring(2,params[1].length-1);
@@ -219,10 +169,10 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                 });
                             } else notEnoughParametersMessage(syntax,channelID);
                         break;
-                        case PREFIX_REGISTER:
+                        case CONSTANTS.PREFIX_REGISTER:
                             syntax = "--register {@mention} {role}";
                             if(params.length == 3){
-                                ROLES_MODEL.findOne({"name": params[REGISTER_ROLE_POSITION]}, function(role_err,role_res){
+                                ROLES_MODEL.findOne({"name": params[CONSTANTS.REGISTER_ROLE_POSITION]}, function(role_err,role_res){
                                     if(!role_err){
                                     if(role_res){
                                         USER_MODEL.findOne({discord_id: evt.d.mentions[0].id}, function(user_err,user_res){
@@ -256,15 +206,15 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                 });
                             } else notEnoughParametersMessage(syntax,channelID);
                         break;
-                        case PREFIX_REGISTER_PLAYER:
+                        case CONSTANTS.PREFIX_REGISTER_PLAYER:
                             syntax = "--regPlayer {@mention} {name} {country code{2}} {platform{2}} [hours]";
                             if(params.length >= 5){
                                 PLAYERS_MODEL.findOne({'discord_id': evt.d.mentions[0].id}, function(e1,r1){
                                     if(!e1){
                                     if(!r1){
-                                        COUNTRIES_MODEL.findOne({"code": params[REGISTER_COUNTRY_CODE_POSITION].toLowerCase()}, function(e2,r2){
+                                        COUNTRIES_MODEL.findOne({"code": params[CONSTANTS.REGISTER_COUNTRY_CODE_POSITION].toLowerCase()}, function(e2,r2){
                                             if(!e2 && r2){
-                                                PLATFORMS_MODEL.findOne({"code": params[REGISTER_PLATFORM_POSITION].toLowerCase()}, function(e3,r3){
+                                                PLATFORMS_MODEL.findOne({"code": params[CONSTANTS.REGISTER_PLATFORM_POSITION].toLowerCase()}, function(e3,r3){
                                                     if(!e3 && r3){
                                                         ROLES_MODEL.findOne({"name": "player"}, function(role_err,role_res){
                                                             if(!role_err){
@@ -293,11 +243,11 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                                 });
                                                             } else throwExistMessage(channelID, "role", false); } else throwErrorMessage(channelID);
                                                         });
-                                                        var hours = params.length == 6 ? params[REGISTER_HOURS_POSITION] : -1;
+                                                        var hours = params.length == 6 ? params[CONSTANTS.REGISTER_HOURS_POSITION] : -1;
                                                         var coll = {
                                                             discord_id: evt.d.mentions[0].id,
-                                                            name: params[REGISTER_NAME_POSITION],
-                                                            tag: params[REGISTER_TAG_POSITION],
+                                                            name: params[CONSTANTS.REGISTER_NAME_POSITION],
+                                                            tag: params[CONSTANTS.REGISTER_TAG_POSITION],
                                                             country: r2._id,
                                                             platform: r3._id,
                                                             created: evt.d.timestamp,
@@ -325,16 +275,16 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                 });
                             } else notEnoughParametersMessage(syntax,channelID);
                         break;
-                        case PREFIX_REGISTER_COUNTRY:
+                        case CONSTANTS.PREFIX_REGISTER_COUNTRY:
                             syntax = "--regCountry {name} {country code{2}}";
                             if(params.length == 3){
-                                if(params[COUNTRY_CODE].length == 2){
-                                    COUNTRIES_MODEL.findOne({"code": params[COUNTRY_CODE].toLowerCase()}, function(e1,r1){
+                                if(params[CONSTANTS.COUNTRY_CODE].length == 2){
+                                    COUNTRIES_MODEL.findOne({"code": params[CONSTANTS.COUNTRY_CODE].toLowerCase()}, function(e1,r1){
                                         if(!e1){
                                         if(!r1){
                                             var coll = {
-                                                name: params[COUNTRY_NAME],
-                                                code: params[COUNTRY_CODE].toLowerCase(),
+                                                name: params[CONSTANTS.COUNTRY_NAME],
+                                                code: params[CONSTANTS.COUNTRY_CODE].toLowerCase(),
                                             }
                                             COUNTRIES_MODEL.create(coll, function(err){
                                                 if(!err) 
@@ -356,16 +306,16 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                 }
                             } else notEnoughParametersMessage(syntax,channelID);
                         break;
-                        case PREFIX_REGISTER_PLATFORM:
+                        case CONSTANTS.PREFIX_REGISTER_PLATFORM:
                             syntax = "--regPlatform {name} {platform code{2}}";
                             if(params.length == 3){
-                                if(params[PLATFORM_CODE].length == 2){
-                                    PLATFORMS_MODEL.findOne({"code": params[PLATFORM_CODE].toLowerCase()}, function(e1,r1){
+                                if(params[CONSTANTS.PLATFORM_CODE].length == 2){
+                                    PLATFORMS_MODEL.findOne({"code": params[CONSTANTS.PLATFORM_CODE].toLowerCase()}, function(e1,r1){
                                         if(!e1){
                                         if(!r1){
                                             var coll = {
-                                                name: params[PLATFORM_NAME],
-                                                code: params[PLATFORM_CODE].toLowerCase(),
+                                                name: params[CONSTANTS.PLATFORM_NAME],
+                                                code: params[CONSTANTS.PLATFORM_CODE].toLowerCase(),
                                             }
                                             PLATFORMS_MODEL.create(coll, function(err){
                                                 if(!err) 
@@ -387,7 +337,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                 }
                             } else notEnoughParametersMessage(syntax,channelID);
                         break;
-                        case PREFIX_MATCH_DECLARE:
+                        case CONSTANTS.PREFIX_MATCH_DECLARE:
                             syntax = "--challenge {@challengee}";
                             if(params.length == 2){
                                 PLAYERS_MODEL.findOne({"discord_id": evt.d.mentions[0].id}, function(err,opponent){
@@ -425,7 +375,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                 });
                             } else notEnoughParametersMessage(syntax, channelID);
                         break;
-                        case PREFIX_ACCEPT_MATCH:
+                        case CONSTANTS.PREFIX_ACCEPT_MATCH:
                             syntax = "--accept {@challenger}";
                             if(params.length == 2){
                                 PLAYERS_MODEL.findOne({'discord_id': evt.d.mentions[0].id}, function(err,p){
@@ -471,7 +421,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                 });
                             } else notEnoughParametersMessage(syntax, channelID);
                         break;
-                        case PREFIX_MATCHMAKE:
+                        case CONSTANTS.PREFIX_MATCHMAKE:
                         /* ADMINS */
                             syntax = "--matchmake {@mention p1} {@mention p2}";
                             if(evt.d.mentions.length == 2){
@@ -511,7 +461,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                 });
                             } else notEnoughParametersMessage(syntax,channelID);
                         break;
-                        case PREFIX_MATCH_END:
+                        case CONSTANTS.PREFIX_MATCH_END:
                         /* ADMIN */
                             syntax = "--end-match {@winner} {@losser} [delete]";
                             if(params.length == 3){
@@ -581,7 +531,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                 });
                             } else notEnoughParametersMessage(syntax,channelID);
                         break;
-                        case PREFIX_PROFILE:
+                        case CONSTANTS.PREFIX_PROFILE:
                             syntax = "--profile [@player]";
                             if(evt.d.mentions.length > 0){
                                 PLAYERS_MODEL.findOne({"discord_id": evt.d.mentions[0].id}, function(err, pl){
@@ -608,32 +558,33 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                             }
                         break;
 
-                        case PREFIX_LIST:
+                        case CONSTANTS.PREFIX_LIST:
                             syntax = "--list {collection}";
                             if(params.length < 3){
                                 if(params.length == 1){
                                     bot.sendMessage({
                                         to: channelID,
                                         message: ""+
-                                        "Available collections: \n"+
-                                        "1) " + ROLES_COLLECTION+ ", Available roles\n"+
-                                        "2) " + PLATFORMS_COLLECTION+", Available platforms\n"+
-                                        "3) " + COUNTRIES_COLLECTION+", Available countries\n"+
-                                        "4) " + USERS_COLLECTION+", Available users\n"+
-                                        "5) " + MATCHMAKING_COLLECTION+", Matchmakings in progress\n"+
-                                        "6) commands"
+                                        "```Available collections: \n"+
+                                        "1) " + CONSTANTS.ROLES_COLLECTION+ ", Available roles\n"+
+                                        "2) " + PLATFORMS_COLLECTIMATCHMAKING_HISTORY_COLLECTIONON+", Available platforms\n"+
+                                        "3) " + CONSTANTS.COUNTRIES_COLLECTION+", Available countries\n"+
+                                        "4) " + CONSTANTS.USERS_COLLECTION+", Available users\n"+
+                                        "5) " + CONSTANTS.MATCHMAKING_COLLECTION+", Matchmakings in progress\n"+
+                                        "6) " + CONSTANTS.MATCHMAKING_HISTORY_COLLECTION+", History\n"+
+                                        "7) commands```"
                                     });
                                 } else {
                                     var message = "";
                                     switch(params[1]){
-                                        case COUNTRIES_COLLECTION:
+                                        case CONSTANTS.COUNTRIES_COLLECTION:
                                             COUNTRIES_MODEL.find({}, function(err, objects){
                                                 message += "List of available countries\n";
                                                 if(objects.length == 0) message = "The collection is empty.";
                                                 else {
                                                     objects.forEach(function(document){
                                                         message += "- Name: " + document.name + " | Code: " + document.code.toUpperCase() + "\n";
-                                                    });
+                                                    });CONSTANTS.MATCHMAKING_HISTORY_COLLECTION
                                                 }
                                                 message += "";
                                                 bot.sendMessage({
@@ -642,7 +593,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                 });
                                             });
                                         break;
-                                        case PLATFORMS_COLLECTION:
+                                        case CONSTANTS.PLATFORMS_COLLECTION:
                                             PLATFORMS_MODEL.find({}, function(err, objects){
                                                 message += "List of available platforms\n";
                                                 if(objects.length == 0) message = "The collection is empty.";
@@ -658,7 +609,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                 });
                                             });
                                         break;
-                                        case ROLES_COLLECTION:
+                                        case CONSTANTS.ROLES_COLLECTION:
                                             ROLES_MODEL.find({}, function(err, objects){
                                                 message += "List of available roles\n";
                                                 if(objects.length == 0) message = "The collection is empty.";
@@ -674,7 +625,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                 });
                                             });
                                         break;
-                                        case USERS_COLLECTION:
+                                        case CONSTANTS.USERS_COLLECTION:
                                             USER_MODEL.find({}).populate("role").exec(function(err,objects){
                                                 message += "List of users\n";
                                                 if(objects.length == 0) message = "The collection is empty.";
@@ -690,7 +641,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                 });
                                             });
                                         break;
-                                        case MATCHMAKING_COLLECTION:
+                                        case CONSTANTS.MATCHMAKING_COLLECTION:
                                             message += "List of matchmakings that are taking place now.\n";
                                             MATCHMAKING_MODEL.find({}).populate("challenger").populate("challengee").exec(function(err, matches){
                                                 matches.forEach(function(match){
@@ -707,14 +658,18 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                 })
                                             });
                                         break;
+                                        case CONSTANTS.MATCHMAKING_HISTORY_COLLECTION:
+                                            message += "List of matchmaking history.\n";
+
+                                        break;
                                         case "commands":
                                             message+= "List of commands: \n";
-                                            message+= PREFIX_LIST + ": lists the available collections.\n"+
-                                                    PREFIX_REGISTER_PLAYER + ": Register a new player\n"+
-                                                    PREFIX_REGISTER_PLATFORM + ": Register a new platform\n"+
-                                                    PREFIX_REGISTER_COUNTRY + ": Register a new country\n"+
-                                                    PREFIX_REGISTER + ": Register a new user\n"+
-                                                    PREFIX_MATCHMAKE + ": Register a new matchmake.";
+                                            message+= CONSTANTS.PREFIX_LIST + ": lists the available collections.\n"+
+                                                    CONSTANTS.PREFIX_REGISTER_PLAYER + ": Register a new player\n"+
+                                                    CONSTANTS.PREFIX_REGISTER_PLATFORM + ": Register a new platform\n"+
+                                                    CONSTANTS.PREFIX_REGISTER_COUNTRY + ": Register a new country\n"+
+                                                    CONSTANTS.PREFIX_REGISTER + ": Register a new user\n"+
+                                                    CONSTANTS.PREFIX_MATCHMAKE + ": Register a new matchmake.";
                                             bot.sendMessage({
                                                 to:channelID,
                                                 message:message
