@@ -728,21 +728,20 @@ bot.on('message', async function (user, userID, channelID, message, evt) {
                                             if(player || !hasPlayer){
                                                 var filter = hasPlayer ? {$or: [{'challenger': player._id},{'challengee': player._id}]} : {};
 
-                                                var promise_matchmaking = MATCHMAKING_HISTORY_MODEL.find(filter).populate('challenger').populate('challengee');
+                                                var promise_matchmaking = MATCHMAKING_HISTORY_MODEL.find(filter).populate('challenger').populate('challengee').populate('winner');
                                                 if(params.length == 5)
                                                     promise_matchmaking.limit(params[3]);
                                                 else
                                                     promise_matchmaking.limit(10);
 
                                                 promise_matchmaking.sort({date: 1}).exec(function(err, matches){
-                                                    bot.sendMessage({to:channelID, message: 'Matches err: '+JSON.stringify(err)});
                                                     if(!err){
                                                     if(matches){
                                                         matches.forEach(function(match){
                                                             challenger = mention ? "<@" + match.challenger.discord_id + ">" : match.challenger.name;
                                                             challengee = mention ? "<@" + match.challengee.discord_id + ">" : match.challengee.name;
                                                             winner = mention ? "<@" + match.winner.discord_id + ">" : match.winner.name;
-                                                            message += match.game_date+" "+challenger+" vs "+challengee+" resulted in "+winner+"\n";
+                                                            message += "```"+match.game_date+"``` "+challenger+" vs "+challengee+" resulted in "+winner+"\n";
                                                         });
                                                         bot.sendMessage({
                                                             to:channelID,
