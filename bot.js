@@ -716,17 +716,19 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                         message += "```Note: for a better check of history use: "+ syntax+ "\n```";
                                         var filter = {};
                                         var mention = params[2] == 'yes' ? true : params[2] == 'no' ? false : throwErrorMessage(channelID);
-                                        bot.sendMessage({to:channelID, message:params.length});
                                         if(params.length >= 4){
                                             var discord_id = params[1].substring(2,params[1].length-1);
                                             discord_id = discord_id.indexOf('!') >= 0 ? discord_id.substring(1) : discord_id;
+                                            bot.sendMessage({to:channelID,message: discord_id});
                                             PLAYERS_MODEL.findOne({'discord_id': discord_id}, function(err,player){
+                                                bot.sendMessage({to:channelID,message: JSON.stringify(err) + " p " + JSON.stringify(player)});
                                                 if(!err){
-                                                if(!player){
+                                                if(player){
                                                     filter = {$or: [{'challenger': player.discord_id},{'challengee': player.discord_id}]};
                                                 } else throwExistMessage(channelID, 'player', false); } else throwErrorMessage(channelID);
                                             });
                                         }
+                                        bot.sendMessage({to:channelID,message: "filter" + JSON.stringify(filter)});
                                         var promise_matchmaking = MATCHMAKING_HISTORY_MODEL.find({filter}).populate('challenger').populate('challengee');
                                         if(params.length == 5)
                                             promise_matchmaking.limit(params[3]);
