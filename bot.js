@@ -724,10 +724,9 @@ bot.on('message', async function (user, userID, channelID, message, evt) {
                                             filterPlayer = {'discord_id': discord_id};
                                         }
                                         PLAYERS_MODEL.findOne(filterPlayer, function(err,player){
-                                            bot.sendMessage({to:channelID, message: 'Player err: '+JSON.stringify(err)});
                                             if(!err){
                                             if(player || !hasPlayer){
-                                                var filter = hasPlayer ? {$or: [{'challenger': player.discord_id},{'challengee': player.discord_id}]} : {};
+                                                var filter = hasPlayer ? {$or: [{'challenger': player._id},{'challengee': player._id}]} : {};
 
                                                 var promise_matchmaking = MATCHMAKING_HISTORY_MODEL.find(filter).populate('challenger').populate('challengee');
                                                 if(params.length == 5)
