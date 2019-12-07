@@ -716,6 +716,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                         message += "```Note: for a better check of history use: "+ syntax+ "\n```";
                                         var filter = {};
                                         var mention = params[2] == 'yes' ? true : params[2] == 'no' ? false : throwErrorMessage(channelID);
+                                        bot.sendMessage({to:channelID, message:params.length});
                                         if(params.length >= 4){
                                             var discord_id = params[1].substring(2,params[1].length-1);
                                             discord_id = discord_id.indexOf('!') >= 0 ? discord_id.substring(1) : discord_id;
