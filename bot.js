@@ -717,7 +717,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                         var filter = {};
                                         var mention = params[2] == 'yes' ? true : params[2] == 'no' ? false : throwErrorMessage(channelID);
                                         if(params.length >= 4){
-                                            var discord_id = params[1].substring(2,params[1].length-1);
+                                            var discord_id = params[3].substring(2,params[3].length-1);
                                             discord_id = discord_id.indexOf('!') >= 0 ? discord_id.substring(1) : discord_id;
                                             bot.sendMessage({to:channelID,message: discord_id});
                                             PLAYERS_MODEL.findOne({'discord_id': discord_id}, function(err,player){
