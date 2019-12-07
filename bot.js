@@ -613,165 +613,161 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 
                         case PREFIX_LIST:
                             syntax = "--list {collection}";
-                            if(params.length < 3){
-                                if(params.length == 1){
-                                    bot.sendMessage({
-                                        to: channelID,
-                                        message: ""+
-                                        "```Available collections: \n"+
-                                        "1) " + ROLES_COLLECTION+ ", Available roles\n"+
-                                        "2) " + PLATFORMS_COLLECTION+", Available platforms\n"+
-                                        "3) " + COUNTRIES_COLLECTION+", Available countries\n"+
-                                        "4) " + USERS_COLLECTION+", Available users\n"+
-                                        "5) " + MATCHMAKING_COLLECTION+", Matchmakings in progress\n"+
-                                        "6) " + MATCHMAKING_HISTORY_COLLECTION+", History\n"+
-                                        "7) commands```"
-                                    });
-                                } else {
-                                    var message = "";
-                                    switch(params[1]){
-                                        case COUNTRIES_COLLECTION:
-                                            COUNTRIES_MODEL.find({}, function(err, objects){
-                                                message += "List of available countries\n";
-                                                if(objects.length == 0) message = "The collection is empty.";
-                                                else {
-                                                    objects.forEach(function(document){
-                                                        message += "- Name: " + document.name + " | Code: " + document.code.toUpperCase() + "\n";
-                                                    });
-                                                }
-                                                message += "";
-                                                bot.sendMessage({
-                                                    to:channelID,
-                                                    message: message
-                                                });
-                                            });
-                                        break;
-                                        case PLATFORMS_COLLECTION:
-                                            PLATFORMS_MODEL.find({}, function(err, objects){
-                                                message += "List of available platforms\n";
-                                                if(objects.length == 0) message = "The collection is empty.";
-                                                else {
-                                                    objects.forEach(function(document){
-                                                        message += "- Name: " + document.name + " | Code: " + document.code.toUpperCase() + "\n";
-                                                    });
-                                                }
-                                                message += "";
-                                                bot.sendMessage({
-                                                    to:channelID,
-                                                    message: message
-                                                });
-                                            });
-                                        break;
-                                        case ROLES_COLLECTION:
-                                            ROLES_MODEL.find({}, function(err, objects){
-                                                message += "List of available roles\n";
-                                                if(objects.length == 0) message = "The collection is empty.";
-                                                else {
-                                                    objects.forEach(function(document){
-                                                        message += "- Name: '" + document.name + "'\n";
-                                                    });
-                                                }
-                                                message += "";
-                                                bot.sendMessage({
-                                                    to:channelID,
-                                                    message: message
-                                                });
-                                            });
-                                        break;
-                                        case USERS_COLLECTION:
-                                            USER_MODEL.find({}).populate("role").exec(function(err,objects){
-                                                message += "List of users\n";
-                                                if(objects.length == 0) message = "The collection is empty.";
-                                                else {
-                                                    objects.forEach(function(document){
-                                                        message += "- Discord: '<@" + document.discord_id + ">' | Role: '" + document.role.name + "'\n";
-                                                    });
-                                                }
-                                                message += "";
-                                                bot.sendMessage({
-                                                    to:channelID,
-                                                    message: message
-                                                });
-                                            });
-                                        break;
-                                        case MATCHMAKING_COLLECTION:
-                                            message += "List of matchmakings that are taking place now.\n";
-                                            MATCHMAKING_MODEL.find({}).populate("challenger").populate("challengee").exec(function(err, matches){
-                                                matches.forEach(function(match){
-                                                    var date = match.created_date.getDate();
-                                                    var month = match.created_date.getMonth();
-                                                    var year = match.created_date.getFullYear();
-                                                    var dateString = date + "/" +(month + 1) + "/" + year;
-                                                    message += dateString + " - <@" + match.challenger.discord_id + "> vs <@" + match.challengee.discord_id + ">\n";
-                                                });
-        
-                                                bot.sendMessage({
-                                                    to: channelID,
-                                                    message: message
-                                                })
-                                            });
-                                        break;
-                                        case MATCHMAKING_HISTORY_COLLECTION:
-                                            syntax = '--list history {mention? [yes|no]} [@player [limit]]';
-                                            message += "List of matchmaking history.\n";
-                                            message += "```Note: for a better check of history use: "+ syntax+ "\n```";
-                                            var filter = {};
-                                            var mention = params[2] == 'yes' ? true : params[2] == 'no' ? false : throwErrorMessage(channelID);
-                                            if(params.length >= 4){
-                                                var discord_id = params[1].substring(2,params[1].length-1);
-                                                discord_id = discord_id.indexOf('!') >= 0 ? discord_id.substring(1) : discord_id;
-                                                PLAYERS_MODEL.findOne({'discord_id': discord_id}, function(err,player){
-                                                    if(!err){
-                                                    if(!player){
-                                                        filter = {$or: [{'challenger': player.discord_id},{'challengee': player.discord_id}]};
-                                                    } else throwExistMessage(channelID, 'player', false); } else throwErrorMessage(channelID);
+                            if(params.length == 1){
+                                bot.sendMessage({
+                                    to: channelID,
+                                    message: ""+
+                                    "```Available collections: \n"+
+                                    "1) " + ROLES_COLLECTION+ ", Available roles\n"+
+                                    "2) " + PLATFORMS_COLLECTION+", Available platforms\n"+
+                                    "3) " + COUNTRIES_COLLECTION+", Available countries\n"+
+                                    "4) " + USERS_COLLECTION+", Available users\n"+
+                                    "5) " + MATCHMAKING_COLLECTION+", Matchmakings in progress\n"+
+                                    "6) " + MATCHMAKING_HISTORY_COLLECTION+", History\n"+
+                                    "7) commands```"
+                                });
+                            } else {
+                                var message = "";
+                                switch(params[1]){
+                                    case COUNTRIES_COLLECTION:
+                                        COUNTRIES_MODEL.find({}, function(err, objects){
+                                            message += "List of available countries\n";
+                                            if(objects.length == 0) message = "The collection is empty.";
+                                            else {
+                                                objects.forEach(function(document){
+                                                    message += "- Name: " + document.name + " | Code: " + document.code.toUpperCase() + "\n";
                                                 });
                                             }
-                                            var promise_matchmaking = MATCHMAKING_HISTORY_MODEL.find({filter}).populate('challenger').populate('challengee');
-                                            if(params.length == 5)
-                                                promise_matchmaking.limit(params[3]);
-                                            else
-                                                promise_matchmaking.limit(10);
-
-                                            promise_matchmaking.sort({date: 1}).exec(function(err, matches){
-                                                if(!err){
-                                                if(!matches){
-                                                    matches.forEach(function(match){
-                                                        challenger = mention ? "<@" + match.challenger.discord_id + ">" : match.challenger.name;
-                                                        challengee = mention ? "<@" + match.challengee.discord_id + ">" : match.challengee.name;
-                                                        winner = mention ? "<@" + match.winner.discord_id + ">" : match.winner.name;
-                                                        message += match.game_date+" "+challenger+" vs "+challengee+" resulted in "+winner+"\n";
-                                                    });
-                                                    bot.sendMessage({
-                                                        to:channelID,
-                                                        message: message
-                                                    })
-                                                } else bot.sendMessage({to: channelID, message: 'The player has not recorded any finished challenges'});} else throwErrorMessage(channelID);
-                                            });
-                                        break;
-                                        case "commands":
-                                            message+= "List of commands: \n";
-                                            message+= PREFIX_LIST + ": lists the available collections.\n"+
-                                                    PREFIX_REGISTER_PLAYER + ": Register a new player\n"+
-                                                    PREFIX_REGISTER_PLATFORM + ": Register a new platform\n"+
-                                                    PREFIX_REGISTER_COUNTRY + ": Register a new country\n"+
-                                                    PREFIX_REGISTER + ": Register a new user\n"+
-                                                    PREFIX_MATCHMAKE + ": Register a new matchmake.";
+                                            message += "";
                                             bot.sendMessage({
                                                 to:channelID,
-                                                message:message
+                                                message: message
                                             });
-                                        break;
-                                        default:
+                                        });
+                                    break;
+                                    case PLATFORMS_COLLECTION:
+                                        PLATFORMS_MODEL.find({}, function(err, objects){
+                                            message += "List of available platforms\n";
+                                            if(objects.length == 0) message = "The collection is empty.";
+                                            else {
+                                                objects.forEach(function(document){
+                                                    message += "- Name: " + document.name + " | Code: " + document.code.toUpperCase() + "\n";
+                                                });
+                                            }
+                                            message += "";
+                                            bot.sendMessage({
+                                                to:channelID,
+                                                message: message
+                                            });
+                                        });
+                                    break;
+                                    case ROLES_COLLECTION:
+                                        ROLES_MODEL.find({}, function(err, objects){
+                                            message += "List of available roles\n";
+                                            if(objects.length == 0) message = "The collection is empty.";
+                                            else {
+                                                objects.forEach(function(document){
+                                                    message += "- Name: '" + document.name + "'\n";
+                                                });
+                                            }
+                                            message += "";
+                                            bot.sendMessage({
+                                                to:channelID,
+                                                message: message
+                                            });
+                                        });
+                                    break;
+                                    case USERS_COLLECTION:
+                                        USER_MODEL.find({}).populate("role").exec(function(err,objects){
+                                            message += "List of users\n";
+                                            if(objects.length == 0) message = "The collection is empty.";
+                                            else {
+                                                objects.forEach(function(document){
+                                                    message += "- Discord: '<@" + document.discord_id + ">' | Role: '" + document.role.name + "'\n";
+                                                });
+                                            }
+                                            message += "";
+                                            bot.sendMessage({
+                                                to:channelID,
+                                                message: message
+                                            });
+                                        });
+                                    break;
+                                    case MATCHMAKING_COLLECTION:
+                                        message += "List of matchmakings that are taking place now.\n";
+                                        MATCHMAKING_MODEL.find({}).populate("challenger").populate("challengee").exec(function(err, matches){
+                                            matches.forEach(function(match){
+                                                var date = match.created_date.getDate();
+                                                var month = match.created_date.getMonth();
+                                                var year = match.created_date.getFullYear();
+                                                var dateString = date + "/" +(month + 1) + "/" + year;
+                                                message += dateString + " - <@" + match.challenger.discord_id + "> vs <@" + match.challengee.discord_id + ">\n";
+                                            });
+    
                                             bot.sendMessage({
                                                 to: channelID,
-                                                message: "The collection doesn't exist, use --list to see the available collections."
+                                                message: message
+                                            })
+                                        });
+                                    break;
+                                    case MATCHMAKING_HISTORY_COLLECTION:
+                                        syntax = '--list history {mention? [yes|no]} [@player [limit]]';
+                                        message += "List of matchmaking history.\n";
+                                        message += "```Note: for a better check of history use: "+ syntax+ "\n```";
+                                        var filter = {};
+                                        var mention = params[2] == 'yes' ? true : params[2] == 'no' ? false : throwErrorMessage(channelID);
+                                        if(params.length >= 4){
+                                            var discord_id = params[1].substring(2,params[1].length-1);
+                                            discord_id = discord_id.indexOf('!') >= 0 ? discord_id.substring(1) : discord_id;
+                                            PLAYERS_MODEL.findOne({'discord_id': discord_id}, function(err,player){
+                                                if(!err){
+                                                if(!player){
+                                                    filter = {$or: [{'challenger': player.discord_id},{'challengee': player.discord_id}]};
+                                                } else throwExistMessage(channelID, 'player', false); } else throwErrorMessage(channelID);
                                             });
-                                        break;
-                                    }
+                                        }
+                                        var promise_matchmaking = MATCHMAKING_HISTORY_MODEL.find({filter}).populate('challenger').populate('challengee');
+                                        if(params.length == 5)
+                                            promise_matchmaking.limit(params[3]);
+                                        else
+                                            promise_matchmaking.limit(10);
+
+                                        promise_matchmaking.sort({date: 1}).exec(function(err, matches){
+                                            if(!err){
+                                            if(!matches){
+                                                matches.forEach(function(match){
+                                                    challenger = mention ? "<@" + match.challenger.discord_id + ">" : match.challenger.name;
+                                                    challengee = mention ? "<@" + match.challengee.discord_id + ">" : match.challengee.name;
+                                                    winner = mention ? "<@" + match.winner.discord_id + ">" : match.winner.name;
+                                                    message += match.game_date+" "+challenger+" vs "+challengee+" resulted in "+winner+"\n";
+                                                });
+                                                bot.sendMessage({
+                                                    to:channelID,
+                                                    message: message
+                                                })
+                                            } else bot.sendMessage({to: channelID, message: 'The player has not recorded any finished challenges'});} else throwErrorMessage(channelID);
+                                        });
+                                    break;
+                                    case "commands":
+                                        message+= "List of commands: \n";
+                                        message+= PREFIX_LIST + ": lists the available collections.\n"+
+                                                PREFIX_REGISTER_PLAYER + ": Register a new player\n"+
+                                                PREFIX_REGISTER_PLATFORM + ": Register a new platform\n"+
+                                                PREFIX_REGISTER_COUNTRY + ": Register a new country\n"+
+                                                PREFIX_REGISTER + ": Register a new user\n"+
+                                                PREFIX_MATCHMAKE + ": Register a new matchmake.";
+                                        bot.sendMessage({
+                                            to:channelID,
+                                            message:message
+                                        });
+                                    break;
+                                    default:
+                                        bot.sendMessage({
+                                            to: channelID,
+                                            message: "The collection doesn't exist, use --list to see the available collections."
+                                        });
+                                    break;
                                 }
-                            } else {
-                                notEnoughParametersMessage(syntax,channelID);
                             }
                         break;
                         default:
