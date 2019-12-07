@@ -4,6 +4,7 @@ const MATCHMAKING_HISTORY_COLLECTION = "matchmaking_history";
 const schema = new mongoose.Schema({
     challenger: { type: mongoose.Schema.Types.ObjectId, ref: 'players' },
     challengee: { type: mongoose.Schema.Types.ObjectId, ref: 'players' },
+    winner: {type: mongoose.Schema.Types.ObjectId, ref: 'players'},
     created_date: Date,
     game_date: Date,
     challenger_old_rating: Number,

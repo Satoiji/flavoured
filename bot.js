@@ -191,6 +191,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                     var history = {
                                         challenger: winner._id,
                                         challengee: losser._id,
+                                        winner: winner._id,
                                         game_date: Date.now(),
                                         challenger_old_rating: p,
                                         challenger_new_rating: P,
@@ -553,6 +554,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                             var coll = {
                                                 challenger: players[0]._id,
                                                 challengee: players[1]._id,
+                                                winner: players[0]._id,
                                                 created_date: match.created_date,
                                                 game_date: Date.now(),
                                                 challenger_old_rating: v,
@@ -635,7 +637,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                                 else {
                                                     objects.forEach(function(document){
                                                         message += "- Name: " + document.name + " | Code: " + document.code.toUpperCase() + "\n";
-                                                    });MATCHMAKING_HISTORY_COLLECTION
+                                                    });
                                                 }
                                                 message += "";
                                                 bot.sendMessage({
@@ -710,8 +712,42 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                             });
                                         break;
                                         case MATCHMAKING_HISTORY_COLLECTION:
+                                            syntax = '--list history {mention? [yes|no]} [@player [limit]]';
                                             message += "List of matchmaking history.\n";
+                                            message += "```Note: for a better check of history use: "+ syntax+ "\n```";
+                                            var filter = {};
+                                            var mention = params[2] == 'yes' ? true : params[2] == 'no' ? false : throwErrorMessage(channelID);
+                                            if(params.length >= 4){
+                                                var discord_id = params[1].substring(2,params[1].length-1);
+                                                discord_id = discord_id.indexOf('!') >= 0 ? discord_id.substring(1) : discord_id;
+                                                PLAYERS_MODEL.findOne({'discord_id': discord_id}, function(err,player){
+                                                    if(!err){
+                                                    if(!player){
+                                                        filter = {$or: [{'challenger': player.discord_id},{'challengee': player.discord_id}]};
+                                                    } else throwExistMessage(channelID, 'player', false); } else throwErrorMessage(channelID);
+                                                });
+                                            }
+                                            var promise_matchmaking = MATCHMAKING_HISTORY_MODEL.find({filter}).populate('challenger').populate('challengee');
+                                            if(params.length == 5)
+                                                promise_matchmaking.limit(params[3]);
+                                            else
+                                                promise_matchmaking.limit(10);
 
+                                            promise_matchmaking.sort({date: 1}).exec(function(err, matches){
+                                                if(!err){
+                                                if(!matches){
+                                                    matches.forEach(function(match){
+                                                        challenger = mention ? "<@" + match.challenger.discord_id + ">" : match.challenger.name;
+                                                        challengee = mention ? "<@" + match.challengee.discord_id + ">" : match.challengee.name;
+                                                        winner = mention ? "<@" + match.winner.discord_id + ">" : match.winner.name;
+                                                        message += match.game_date+" "+challenger+" vs "+challengee+" resulted in "+winner+"\n";
+                                                    });
+                                                    bot.sendMessage({
+                                                        to:channelID,
+                                                        message: message
+                                                    })
+                                                } else bot.sendMessage({to: channelID, message: 'The player has not recorded any finished challenges'});} else throwErrorMessage(channelID);
+                                            });
                                         break;
                                         case "commands":
                                             message+= "List of commands: \n";
