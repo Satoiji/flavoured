@@ -187,12 +187,33 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                     losser.games_played++;
                                     losser.last_game_date = Date.now();
 
-                                    winner.save();
-                                    losser.save();
-                                    
-                                    bot.sendMessage({
-                                        to: channelID,
-                                        message: "Old p: " + p + " - New p: " + Math.round(P) + "\nOld v: " + v + " - New v: " + Math.round(V)
+                                    var history = {
+                                        challenger: winner._id,
+                                        challengee: losser._id,
+                                        game_date: Date.now(),
+                                        challenger_old_rating: p,
+                                        challenger_new_rating: P,
+                                        challengee_old_rating: v,
+                                        challengee_new_rating: V,
+                                        status: 1,
+                                    }
+
+                                    MATCHMAKING_HISTORY_MODEL.create(history, function(res){
+                                        if(!err) {
+                                            winner.save();
+                                            losser.save();
+                                            
+                                            bot.sendMessage({
+                                                to: channelID,
+                                                message: "Old <@:"+ wId + "> elo: " + p + " - New <@:"+ wId + "> elo: " + Math.round(P) + "\nOld <@:"+ lId + "> elo: " + v + " - New <@:"+ lId + "> elo: " + Math.round(V)
+                                            });
+                                        }
+                                        else
+                                            bot.sendMessage({
+                                                to: channelID,
+                                                message: "Something wrong happend when creating this match history! just in case, the elo's have been reverted, please try again"
+                                            });
+                                        
                                     });
                                 });
                                 });
