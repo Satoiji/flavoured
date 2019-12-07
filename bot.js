@@ -724,6 +724,7 @@ bot.on('message', async function (user, userID, channelID, message, evt) {
                                             filterPlayer = {'discord_id': discord_id};
                                         }
                                         PLAYERS_MODEL.findOne(filterPlayer, function(err,player){
+                                            bot.sendMessage({to:channelID, message: 'Player err: '+JSON.stringify(err)});
                                             if(!err){
                                             if(player || !hasPlayer){
                                                 var filter = hasPlayer ? {$or: [{'challenger': player.discord_id},{'challengee': player.discord_id}]} : {};
@@ -735,6 +736,7 @@ bot.on('message', async function (user, userID, channelID, message, evt) {
                                                     promise_matchmaking.limit(10);
 
                                                 promise_matchmaking.sort({date: 1}).exec(function(err, matches){
+                                                    bot.sendMessage({to:channelID, message: 'Matches err: '+JSON.stringify(err)});
                                                     if(!err){
                                                     if(!matches){
                                                         matches.forEach(function(match){
