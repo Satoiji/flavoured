@@ -207,7 +207,7 @@ bot.on('message', async function (user, userID, channelID, message, evt) {
                                             
                                             bot.sendMessage({
                                                 to: channelID,
-                                                message: "Old <@:"+ wId + "> elo: " + p + " - New <@:"+ wId + "> elo: " + Math.round(P) + "\nOld <@:"+ lId + "> elo: " + v + " - New <@:"+ lId + "> elo: " + Math.round(V)
+                                                message: "Old <@"+ wId + "> elo: " + p + " - New <@"+ wId + "> elo: " + Math.round(P) + "\nOld <@"+ lId + "> elo: " + v + " - New <@"+ lId + "> elo: " + Math.round(V)
                                             });
                                         }
                                         else
