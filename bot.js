@@ -142,14 +142,16 @@ bot.on('message', async function (user, userID, channelID, message, evt) {
             PLAYERS_MODEL.findOne({"discord_id": userID}).exec(function(err2, player){
                 if(doc || player){
                     var access = false;
-                    doc.role.forEach(function(role){
-                        MIDDLEWARE[role.priviledge-1].forEach(function(value){
-                            if(params[FUNCTION] == value||params[FUNCTION] == "commands"){
-                                access = true;
-                                return;
-                            }
-                        });
-                    });
+                    if(doc){
+                        doc.role.forEach(function(role){
+                            MIDDLEWARE[role.priviledge-1].forEach(function(value){
+                                if(params[FUNCTION] == value||params[FUNCTION] == "commands"){
+                                    access = true;
+                                    return;
+                                }
+                            });
+                        });       
+                    }
                     if(player){
                         MIDDLEWARE[4].forEach(function(value){
                             if(params[FUNCTION] == value){
