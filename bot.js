@@ -147,13 +147,13 @@ bot.on('messageReactionAdd', function( evt, user ){
             if(finish){
                 if(evt.d.member.user.id == finish.reacter){
                     switch(evt.d.emoji.name) {
-                        case ✅:
+                        case '✅':
                             bot.sendMessage({
                                 to: evt.d.channelID,
                                 message: "teseting ✅"
                             });
                         break;
-                        case ❌:
+                        case '❌':
                             bot.sendMessage({
                                 to: evt.d.channelID,
                                 message: "teseting ❌"
