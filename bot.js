@@ -170,7 +170,13 @@ bot.on('messageReactionAdd', function( reaction, user ){
     }
 });
 
-bot.on('message', async function (user, userID, channelID, message, evt) {
+bot.on('message', async (message) => {
+    console.log(JSON.stringify(message));
+    return;
+    var user = message.user;
+    var userID = message.userID;
+    var channelID = message.channelID;
+    var message = message.message;
     var syntax = "";
     if(message.substring(0,2) == "--"){
         message = message.substring(2,message.length);
