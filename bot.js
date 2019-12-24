@@ -306,13 +306,22 @@ bot.on('message', async function (user, userID, channelID, message, evt) {
                                                 score: params[5]
                                             }
                                             MATCH_FINISH_MODEL.create(coll, function(err){
-                                                if(!err) 
+                                                if(!err) {
                                                     bot.sendMessage({
                                                         to: channelID,
                                                         message: "Waiting for reaction to your message"
                                                     });
-                                                else
+
+                                                    const filter = (reaction, user) => reaction.emoji.name === '✅' && user.id === reacter.discord_id;
+                                                    message.awaitReactions(filter, { time: 15000 })
+                                                        .then(collected => bot.sendMessage({
+                                                            to: channelID,
+                                                            message: JSON.stringify(collected)
+                                                        }))
+                                                        .catch(console.error);
+                                                } else {
                                                     throwErrorMessage(channelID);
+                                                }
                                             });
                                         });
                                         });
