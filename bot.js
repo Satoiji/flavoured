@@ -135,8 +135,12 @@ function throwExistMessage(channelID, collection, exists){
 }
 
 //mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-bot.on('messageReactionAdd', function( reaction, user ){
-    console.log(JSON.stringify(reaction));
+bot.on('messageReactionAdd', function( evt, user ){
+    //✅
+    //❌
+    //evt.d.member.user.id
+    //evt.d.emoji.name
+    
 });
 
 bot.on('message', async function (user, userID, channelID, message, evt) {
