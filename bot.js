@@ -135,13 +135,9 @@ function throwExistMessage(channelID, collection, exists){
 }
 
 bot.on('ready', () => {
-            bot.sendMessage({
-                to:'646227465039249460',
-                message: JSON.stringify(bot)
-
-            });
     MATCH_FINISH_MODEL.find({}, function(err,messages){
         messages.forEach(message => {
+            bot.fetchMessage(message.message_id);
         });
     });
 });
