@@ -313,7 +313,7 @@ bot.on('message', async function (user, userID, channelID, message, evt) {
                                                     });
 
                                                     const filter = (reaction, user) => reaction.emoji.name === '✅' && user.id === reacter.discord_id;
-                                                    message.awaitReactions(filter, { time: 15000 })
+                                                    evt.awaitReactions(filter, { time: 15000 })
                                                         .then(collected => bot.sendMessage({
                                                             to: channelID,
                                                             message: JSON.stringify(collected)
