@@ -224,16 +224,16 @@ bot.on('message', async function (user, userID, channelID, message, evt) {
                                                 message: "Something wrong happend when creating this match history! just in case, the elo's have been reverted, please try again"
                                             });
                                         
-                                    });
+                                        });
                                 });
                                 });
-                            } else notEnoughParametersMessage(syntax,channelID);
-                        } else {
-                            bot.sendMessage({
-                                to: channelID,
-                                message: JSON.stringify(evt);
-                            });
-                        }
+                                } else notEnoughParametersMessage(syntax,channelID);
+                            } else {
+                                bot.sendMessage({
+                                    to: channelID,
+                                    message: JSON.stringify(evt)
+                                });
+                            }
                         break;
                         case PREFIX_REGISTER:
                             syntax = "--register {@mention} {role}";
