@@ -135,11 +135,11 @@ function throwExistMessage(channelID, collection, exists){
 }
 
 bot.on('ready', () => {
-    MATCH_FINISH_MODEL.find({}, function(err,messages){
+    /*MATCH_FINISH_MODEL.find({}, function(err,messages){
         messages.forEach(message => {
             bot.fetchMessage(message.message_id);
         });
-    });
+    });*/
 });
 
 //mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
