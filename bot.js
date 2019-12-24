@@ -141,7 +141,7 @@ bot.on('messageReactionAdd', function( evt, user ){
     //evt.d.member.user.id
     //evt.d.emoji.name
     //evt.d.message_id
-    if(evt.d.member.user.id == '420042963624919040'){
+    if(evt.d.member.user.id == '420042963624919040' || evt.d.member.user.id == '351114285155614720' || evt.d.member.user.id == '142798704703700992'){
         MATCH_FINISH_MODEL.findOne({"message_id": evt.d.message_id}).exec(function(err, finish){
             if(err) throwErrorMessage(evt.d.channelID);
             if(finish){

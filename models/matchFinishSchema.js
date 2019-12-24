@@ -6,7 +6,7 @@ const schema = new mongoose.Schema({
     reacter: String,
     winner: String,
     losser: String,
-    message_id: Number,
+    message_id: String,
     match_date: String,
     score: String
 });
