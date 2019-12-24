@@ -140,7 +140,30 @@ bot.on('messageReactionAdd', function( evt, user ){
     //❌
     //evt.d.member.user.id
     //evt.d.emoji.name
-    
+    //evt.d.message_id
+    if(evt.d.member.user.id == '420042963624919040'){
+        MATCH_FINISH_MODEL.findOne({"message_id": evt.d.message_id}).exec(function(err, finish){
+            if(err) throwErrorMessage(evt.d.channelID);
+            if(finish){
+                if(evt.d.member.user.id == finish.reacter){
+                    switch(evt.d.emoji.name) {
+                        case ✅:
+                            bot.sendMessage({
+                                to: evt.d.channelID,
+                                message: "teseting ✅"
+                            });
+                        break;
+                        case ❌:
+                            bot.sendMessage({
+                                to: evt.d.channelID,
+                                message: "teseting ❌"
+                            });
+                        break;
+                    }
+                }
+            } else throwExistMessage(evt.d.channelID, MATCH_FINISH_COLLECTION, false)
+        });
+    }
 });
 
 bot.on('message', async function (user, userID, channelID, message, evt) {
