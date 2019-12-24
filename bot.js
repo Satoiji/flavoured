@@ -135,11 +135,11 @@ function throwExistMessage(channelID, collection, exists){
 }
 
 bot.on('ready', () => {
-    /*MATCH_FINISH_MODEL.find({}, function(err,messages){
+    MATCH_FINISH_MODEL.find({}, function(err,messages){
         messages.forEach(message => {
-            bot.guilds.get('guild_id').channels.get('646227465039249460').fetchMessage(message.message_id);
+            bot.guilds.get('643193752839651348').channels.get('646227465039249460').fetchMessage(message.message_id);
         });
-    });*/
+    });
 });
 
 //mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
