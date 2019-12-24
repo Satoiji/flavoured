@@ -229,10 +229,33 @@ bot.on('message', async function (user, userID, channelID, message, evt) {
                                 });
                                 } else notEnoughParametersMessage(syntax,channelID);
                             } else {
-                                bot.sendMessage({
-                                    to: channelID,
-                                    message: JSON.stringify(evt)
-                                });
+                                if(userID == '420042963624919040'){
+                                    //evt.d.id
+                                    syntax = "--rating w:{@mention} l:{@mention} {date only xx/yy/zz} {score}";
+                                    if (params.length == 5) {
+                                        var writer = params[1].substring(4,params[1].length-1);
+                                        writer = writer.indexOf('!') >= 0 ? writer.substring(1) : writer;
+                                        var reacter = params[2].substring(4,params[2].length-1);
+                                        reacter = reacter.indexOf('!') >= 0 ? reacter.substring(1) : reacter;
+                                        if (userID != writer && userID != reacter) {
+                                            bot.sendMessage({
+                                                to: channelID,
+                                                message: "you can only create ratings for your own matches"
+                                            });
+                                        } else {
+                                            PLAYERS_MODEL.findOne({"discord_id":writer}, function(err1,writer){
+                                            PLAYERS_MODEL.findOne({"discord_id":reacter}, function(err2,reacter){
+                                                if(err1 || err2){ throwErrorMessage(channelID); return;}
+                                                if(!writer || !reacter){ throwExistMessage(channelID, "player", false); return;}
+                                                bot.sendMessage({
+                                                    to:channelID,
+                                                    message: "doing cool stuff"
+                                                });
+                                            });
+                                            });
+                                        }
+                                    } else notEnoughParametersMessage(syntax,channelID);
+                                }
                             }
                         break;
                         case PREFIX_REGISTER:
