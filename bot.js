@@ -13,6 +13,7 @@ const ROLES_MODEL = require('./models/rolesSchema.js').schema;
 const MATCHMAKING_MODEL = require('./models/matchmakingSchema.js').schema;
 const MATCHMAKING_HISTORY_MODEL = require('./models/matchmakingHistorySchema.js').schema;
 const DECLARE_MATCHES_MODEL = require('./models/declareMatchesSchema.js').schema;
+const MATCH_FINISH_MODEL = require('./models/matchFinishSchema.js').schema;
 
 //var uri = "mongodb://g_herrera:"+auth.mongo+"@flavoured-classics-shard-00-00-dmotk.mongodb.net:27017,flavoured-classics-shard-00-01-dmotk.mongodb.net:27017,flavoured-classics-shard-00-02-dmotk.mongodb.net:27017/test?ssl=true&replicaSet=Flavoured-Classics-shard-0&authSource=admin&retryWrites=true&w=majority";
 const uri = "mongodb+srv://g_herrera:"+auth.mongo+"@flavoured-classics-dmotk.mongodb.net/URM_collection?retryWrites=true&w=majority";
@@ -32,6 +33,7 @@ const MATCHMAKING_HISTORY_COLLECTION = "history";
 const PLATFORMS_COLLECTION = "platforms";
 const PLAYERS_COLLECTION = "players";
 const ROLES_COLLECTION = "roles";
+const MATCH_FINISH_COLLECTION = "match_finish";
 
 //regPlayer constants
 const PREFIX_REGISTER_PLAYER = "regPlayer";
@@ -106,7 +108,8 @@ var MIDDLEWARE = [
     /*player*/      [PREFIX_MATCH_DECLARE, 
                         PREFIX_ACCEPT_MATCH, 
                         PREFIX_REGISTER_PLAYER,
-                        PREFIX_PROFILE],
+                        PREFIX_PROFILE,
+                        PREFIX_RATING],
 ];
 
 function throwErrorMessage(channelID){
@@ -138,12 +141,14 @@ bot.on('message', async function (user, userID, channelID, message, evt) {
     if(message.substring(0,2) == "--"){
         message = message.substring(2,message.length);
         var params = message.split(" ");
-        USER_MODEL.findOne({"discord_id": userID}).populate("role").exec(function(err, doc){
+        USER_MODEL.findOne({"discord_id": userID}).populate("role").exec(function(err, admin){
             PLAYERS_MODEL.findOne({"discord_id": userID}).exec(function(err2, player){
-                if(doc || player){
+                var isAdmin = false;
+                if(admin || player){
                     var access = false;
-                    if(doc){
-                        doc.role.forEach(function(role){
+                    if(admin){
+                        isAdmin = true;
+                        admin.role.forEach(function(role){
                             MIDDLEWARE[role.priviledge-1].forEach(function(value){
                                 if(params[FUNCTION] == value||params[FUNCTION] == "commands"){
                                     access = true;
@@ -164,7 +169,8 @@ bot.on('message', async function (user, userID, channelID, message, evt) {
                     switch(params[FUNCTION]){
                         case PREFIX_RATING:
                             syntax = "--rating {@winner} {@losser}";
-                            if (evt.d.mentions.length == 2) {
+                            if(isAdmin){
+                                if (evt.d.mentions.length == 2) {
                                 var wId = params[1].substring(2,params[1].length-1);
                                 wId = wId.indexOf('!') >= 0 ? wId.substring(1) : wId;
                                 var lId = params[2].substring(2,params[2].length-1);
@@ -222,6 +228,12 @@ bot.on('message', async function (user, userID, channelID, message, evt) {
                                 });
                                 });
                             } else notEnoughParametersMessage(syntax,channelID);
+                        } else {
+                            bot.sendMessage({
+                                to: channelID,
+                                message: JSON.stringify(evt);
+                            });
+                        }
                         break;
                         case PREFIX_REGISTER:
                             syntax = "--register {@mention} {role}";
