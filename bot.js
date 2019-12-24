@@ -261,29 +261,57 @@ bot.on('message', async function (user, userID, channelID, message, evt) {
                             } else {
                                 if(userID == '420042963624919040'){
                                     //evt.d.id
-                                    syntax = "--rating w:{@mention} l:{@mention} {date only xx/yy/zz} {score}";
-                                    if (params.length == 5) {
-                                        var writer = params[1].substring(4,params[1].length-1);
-                                        writer = writer.indexOf('!') >= 0 ? writer.substring(1) : writer;
-                                        var reacter = params[2].substring(4,params[2].length-1);
-                                        reacter = reacter.indexOf('!') >= 0 ? reacter.substring(1) : reacter;
-                                        if (userID != writer && userID != reacter) {
+                                    syntax = "--rating {@mention} {<|>} {@mention} {date only xx/yy/zz} {score}";
+                                    if (params.length == 6) {
+                                        var writer = userID;
+                                        var p1 = params[1].substring(2,params[1].length-1);
+                                        p1 = p1.indexOf('!') >= 0 ? p1.substring(1) : p1;
+                                        var p2 = params[3].substring(2,params[3].length-1);
+                                        p2 = p2.indexOf('!') >= 0 ? p2.substring(1) : p2;
+                                        var reacter = writer == p1 ? p2 : writer == p2 ? p1 : '0';
+                                        if(reacter == '0'){
                                             bot.sendMessage({
                                                 to: channelID,
                                                 message: "you can only create ratings for your own matches"
                                             });
-                                        } else {
-                                            PLAYERS_MODEL.findOne({"discord_id":writer}, function(err1,writer){
-                                            PLAYERS_MODEL.findOne({"discord_id":reacter}, function(err2,reacter){
-                                                if(err1 || err2){ throwErrorMessage(channelID); return;}
-                                                if(!writer || !reacter){ throwExistMessage(channelID, "player", false); return;}
-                                                bot.sendMessage({
-                                                    to:channelID,
-                                                    message: "doing cool stuff"
-                                                });
-                                            });
-                                            });
+                                            return;
                                         }
+                                        var winner = writer;
+                                        var losser = reacter;
+                                        switch(params[2]){
+                                            case '<':
+                                                winner = p2;
+                                                losser = p1;
+                                            break;
+                                            case '>':
+                                                winner = p1;
+                                                losser = p2;
+                                            break;
+                                        }
+                                        PLAYERS_MODEL.findOne({"discord_id":writer}, function(err1,writer){
+                                        PLAYERS_MODEL.findOne({"discord_id":reacter}, function(err2,reacter){
+                                            if(err1 || err2){ throwErrorMessage(channelID); return;}
+                                            if(!writer || !reacter){ throwExistMessage(channelID, "player", false); return;}
+                                            var coll = {
+                                                writer: writer.discord_id,
+                                                reacter: reacter.discord_id,
+                                                winner: winner,
+                                                losser: losser,
+                                                message_id: evt.d.id,
+                                                match_date: params[4],
+                                                score: params[5]
+                                            }
+                                            MATCH_FINISH_MODEL.create(coll, function(err){
+                                                if(!err) 
+                                                    bot.sendMessage({
+                                                        to: channelID,
+                                                        message: "Waiting for reaction to your message"
+                                                    });
+                                                else
+                                                    throwErrorMessage(channelID);
+                                            });
+                                        });
+                                        });
                                     } else notEnoughParametersMessage(syntax,channelID);
                                 }
                             }
