@@ -135,37 +135,37 @@ function throwExistMessage(channelID, collection, exists){
 }
 
 //mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-bot.on('messageReactionAdd', function( evt, user ){
+bot.on('messageReactionAdd', function( reaction, user ){
     //✅
     //❌
-    //evt.d.member.user.id
-    //evt.d.emoji.name
-    //evt.d.message_id
+    //reaction.d.member.user.id
+    //reaction.d.emoji.name
+    //reaction.d.message_id
     bot.sendMessage({
-        to: evt.d.channelID,
-        message: JSON.stringify(evt)
+        to: reaction.d.channelID,
+        message: JSON.stringify(reaction)
     });
-    if(evt.d.member.user.id == '420042963624919040' || evt.d.member.user.id == '351114285155614720' || evt.d.member.user.id == '142798704703700992'){
-        MATCH_FINISH_MODEL.findOne({"message_id": evt.d.message_id}).exec(function(err, finish){
-            if(err) throwErrorMessage(evt.d.channelID);
+    if(reaction.d.member.user.id == '420042963624919040' || reaction.d.member.user.id == '351114285155614720' || reaction.d.member.user.id == '142798704703700992'){
+        MATCH_FINISH_MODEL.findOne({"message_id": reaction.d.message_id}).exec(function(err, finish){
+            if(err) throwErrorMessage(reaction.d.channelID);
             if(finish){
-                if(evt.d.member.user.id == finish.reacter){
-                    switch(evt.d.emoji.name) {
+                if(reaction.d.member.user.id == finish.reacter){
+                    switch(reaction.d.emoji.name) {
                         case '✅':
                             bot.sendMessage({
-                                to: evt.d.channelID,
+                                to: reaction.d.channelID,
                                 message: "teseting ✅"
                             });
                         break;
                         case '❌':
                             bot.sendMessage({
-                                to: evt.d.channelID,
+                                to: reaction.d.channelID,
                                 message: "teseting ❌"
                             });
                         break;
                     }
                 }
-            } else throwExistMessage(evt.d.channelID, MATCH_FINISH_COLLECTION, false)
+            } else throwExistMessage(reaction.d.channelID, MATCH_FINISH_COLLECTION, false)
         });
     }
 });
