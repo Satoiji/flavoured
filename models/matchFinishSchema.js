@@ -2,10 +2,13 @@ const mongoose = require('mongoose');
 const MATCH_FINISH_COLLECTION = "match_finish";
 
 const schema = new mongoose.Schema({
-    declarer: { type: mongoose.Schema.Types.ObjectId, ref: 'players' },
-    filler: { type: mongoose.Schema.Types.ObjectId, ref: 'players' },
+    writer: String,
+    reacter: String,
+    winner: String,
+    losser: String,
     message_id: Number,
-    created_date: Date,
+    match_date: String,
+    score: String
 });
 
 module.exports.schema = mongoose.model(MATCH_FINISH_COLLECTION, schema);
