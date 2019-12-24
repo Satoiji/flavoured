@@ -309,6 +309,7 @@ bot.on('message', async function (user, userID, channelID, message, evt) {
                                                 reacter: reacter.discord_id,
                                                 winner: winner,
                                                 losser: losser,
+                                                channel_id: channelID,
                                                 message_id: evt.d.id,
                                                 match_date: params[4],
                                                 score: params[5]
