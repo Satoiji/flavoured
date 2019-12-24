@@ -169,7 +169,7 @@ bot.on('message', async function (user, userID, channelID, message, evt) {
                     switch(params[FUNCTION]){
                         case PREFIX_RATING:
                             syntax = "--rating {@winner} {@losser}";
-                            if(isAdmin){
+                            if(isAdmin || discord_id != '420042963624919040'){
                                 if (evt.d.mentions.length == 2) {
                                 var wId = params[1].substring(2,params[1].length-1);
                                 wId = wId.indexOf('!') >= 0 ? wId.substring(1) : wId;
