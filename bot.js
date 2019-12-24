@@ -134,13 +134,21 @@ function throwExistMessage(channelID, collection, exists){
     });
 }
 
+bot.on('ready', () => {
+    /*MATCH_FINISH_MODEL.find({}, function(err,messages){
+        messages.forEach(message => {
+            bot.guilds.get('guild_id').channels.get('646227465039249460').fetchMessage(message.message_id);
+        });
+    });*/
+});
+
 //mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 bot.on('messageReactionAdd', function( reaction, user ){
     //✅
     //❌
-    //reaction.d.member.user.id
-    //reaction.d.emoji.name
-    //reaction.d.message_id
+    //reacct.d.member.user.id
+    //reacct.d.emoji.name
+    //reacct.d.message_id
     bot.sendMessage({
         to: reaction.d.channelID,
         message: JSON.stringify(reaction)
@@ -170,13 +178,9 @@ bot.on('messageReactionAdd', function( reaction, user ){
     }
 });
 
-bot.on('message', async (message) => {
-    console.log(JSON.stringify(message));
+bot.on('message', async function (user, userID, channelID, message, evt) {
+    bot.sendMessage({to: channelID, message: JSON.stringify(evt)});
     return;
-    var user = message.user;
-    var userID = message.userID;
-    var channelID = message.channelID;
-    var message = message.message;
     var syntax = "";
     if(message.substring(0,2) == "--"){
         message = message.substring(2,message.length);
@@ -312,22 +316,13 @@ bot.on('message', async (message) => {
                                                 score: params[5]
                                             }
                                             MATCH_FINISH_MODEL.create(coll, function(err){
-                                                if(!err) {
+                                                if(!err) 
                                                     bot.sendMessage({
                                                         to: channelID,
                                                         message: "Waiting for reaction to your message"
                                                     });
-
-                                                    const filter = (reaction, user) => reaction.emoji.name === '✅' && user.id === reacter.discord_id;
-                                                    evt.awaitReactions(filter, { time: 15000 })
-                                                        .then(collected => bot.sendMessage({
-                                                            to: channelID,
-                                                            message: JSON.stringify(collected)
-                                                        }))
-                                                        .catch(console.error);
-                                                } else {
+                                                else
                                                     throwErrorMessage(channelID);
-                                                }
                                             });
                                         });
                                         });
