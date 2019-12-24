@@ -315,11 +315,13 @@ bot.on('message', async function (user, userID, channelID, message, evt) {
                                                 score: params[5]
                                             }
                                             MATCH_FINISH_MODEL.create(coll, function(err){
-                                                if(!err) 
+                                                if(!err) {
                                                     bot.sendMessage({
                                                         to: channelID,
                                                         message: "Waiting for reaction to your message"
                                                     });
+                                                    bot.fetchMessage(evt.d.id);
+                                                }
                                                 else
                                                     throwErrorMessage(channelID);
                                             });
