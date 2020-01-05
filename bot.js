@@ -371,7 +371,9 @@ bot.on('message', async function (user, userID, channelID, message, evt) {
                         case PREFIX_REGISTER_PLAYER:
                             syntax = "--regPlayer {@mention} {name} {country code{2}} {platform{2}} [hours]";
                             if(params.length >= 5){
-                                PLAYERS_MODEL.findOne({'discord_id': evt.d.mentions[0].id}, function(e1,r1){
+                                var playerId = params[1].substring(2,params[1].length-1);
+                                playerId = playerId.indexOf('!') >= 0 ? playerId.substring(1) : playerId;
+                                PLAYERS_MODEL.findOne({'discord_id': playerId}, function(e1,r1){
                                     if(!e1){
                                     if(!r1){
                                         COUNTRIES_MODEL.findOne({"code": params[REGISTER_COUNTRY_CODE_POSITION].toLowerCase()}, function(e2,r2){
@@ -381,11 +383,11 @@ bot.on('message', async function (user, userID, channelID, message, evt) {
                                                         ROLES_MODEL.findOne({"name": "player"}, function(role_err,role_res){
                                                             if(!role_err){
                                                             if(role_res){
-                                                                USER_MODEL.findOne({discord_id: evt.d.mentions[0].id}, function(user_err,user_res){
+                                                                USER_MODEL.findOne({discord_id: playerId}, function(user_err,user_res){
                                                                     if(!user_err){
                                                                         if(!user_res){
                                                                             var coll = {
-                                                                                discord_id: ""+evt.d.mentions[0].id,
+                                                                                discord_id: ""+playerId,
                                                                                 tag: params[1],
                                                                                 created: Date.now()
                                                                             }
@@ -407,7 +409,7 @@ bot.on('message', async function (user, userID, channelID, message, evt) {
                                                         });
                                                         var hours = params.length == 6 ? params[REGISTER_HOURS_POSITION] : -1;
                                                         var coll = {
-                                                            discord_id: evt.d.mentions[0].id,
+                                                            discord_id: playerId,
                                                             name: params[REGISTER_NAME_POSITION],
                                                             tag: params[REGISTER_TAG_POSITION],
                                                             country: r2._id,

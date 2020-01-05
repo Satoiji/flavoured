@@ -1,5 +1,5 @@
 function index(req, res){
-    res.render('beats/index')
+    res.render('index')
 }
 
 module.exports = {
