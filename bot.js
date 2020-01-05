@@ -13,6 +13,7 @@ const ROLES_MODEL = require('./models/rolesSchema.js').schema;
 const MATCHMAKING_MODEL = require('./models/matchmakingSchema.js').schema;
 const MATCHMAKING_HISTORY_MODEL = require('./models/matchmakingHistorySchema.js').schema;
 const DECLARE_MATCHES_MODEL = require('./models/declareMatchesSchema.js').schema;
+const MATCH_FINISH_MODEL = require('./models/matchFinishSchema.js').schema;
 
 //var uri = "mongodb://g_herrera:"+auth.mongo+"@flavoured-classics-shard-00-00-dmotk.mongodb.net:27017,flavoured-classics-shard-00-01-dmotk.mongodb.net:27017,flavoured-classics-shard-00-02-dmotk.mongodb.net:27017/test?ssl=true&replicaSet=Flavoured-Classics-shard-0&authSource=admin&retryWrites=true&w=majority";
 const uri = "mongodb+srv://g_herrera:"+auth.mongo+"@flavoured-classics-dmotk.mongodb.net/URM_collection?retryWrites=true&w=majority";
@@ -32,6 +33,7 @@ const MATCHMAKING_HISTORY_COLLECTION = "history";
 const PLATFORMS_COLLECTION = "platforms";
 const PLAYERS_COLLECTION = "players";
 const ROLES_COLLECTION = "roles";
+const MATCH_FINISH_COLLECTION = "match_finish";
 
 //regPlayer constants
 const PREFIX_REGISTER_PLAYER = "regPlayer";
@@ -106,7 +108,8 @@ var MIDDLEWARE = [
     /*player*/      [PREFIX_MATCH_DECLARE, 
                         PREFIX_ACCEPT_MATCH, 
                         PREFIX_REGISTER_PLAYER,
-                        PREFIX_PROFILE],
+                        PREFIX_PROFILE,
+                        PREFIX_RATING],
 ];
 
 function throwErrorMessage(channelID){
@@ -131,19 +134,63 @@ function throwExistMessage(channelID, collection, exists){
     });
 }
 
+bot.on('ready', () => {
+    /*MATCH_FINISH_MODEL.find({}, function(err,messages){
+        messages.forEach(message => {
+            bot.fetchMessage(message.message_id);
+        });
+    });*/
+});
+
 //mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+bot.on('messageReactionAdd', function( reaction, user ){
+    //✅
+    //❌
+    //reacct.d.member.user.id
+    //reacct.d.emoji.name
+    //reacct.d.message_id
+    bot.sendMessage({
+        to: reaction.d.channelID,
+        message: JSON.stringify(reaction)
+    });
+    if(reaction.d.member.user.id == '420042963624919040' || reaction.d.member.user.id == '351114285155614720' || reaction.d.member.user.id == '142798704703700992'){
+        MATCH_FINISH_MODEL.findOne({"message_id": reaction.d.message_id}).exec(function(err, finish){
+            if(err) throwErrorMessage(reaction.d.channelID);
+            if(finish){
+                if(reaction.d.member.user.id == finish.reacter){
+                    switch(reaction.d.emoji.name) {
+                        case '✅':
+                            bot.sendMessage({
+                                to: reaction.d.channelID,
+                                message: "teseting ✅"
+                            });
+                        break;
+                        case '❌':
+                            bot.sendMessage({
+                                to: reaction.d.channelID,
+                                message: "teseting ❌"
+                            });
+                        break;
+                    }
+                }
+            } else throwExistMessage(reaction.d.channelID, MATCH_FINISH_COLLECTION, false)
+        });
+    }
+});
 
 bot.on('message', async function (user, userID, channelID, message, evt) {
     var syntax = "";
     if(message.substring(0,2) == "--"){
         message = message.substring(2,message.length);
         var params = message.split(" ");
-        USER_MODEL.findOne({"discord_id": userID}).populate("role").exec(function(err, doc){
+        USER_MODEL.findOne({"discord_id": userID}).populate("role").exec(function(err, admin){
             PLAYERS_MODEL.findOne({"discord_id": userID}).exec(function(err2, player){
-                if(doc || player){
+                var isAdmin = false;
+                if(admin || player){
                     var access = false;
-                    if(doc){
-                        doc.role.forEach(function(role){
+                    if(admin){
+                        isAdmin = true;
+                        admin.role.forEach(function(role){
                             MIDDLEWARE[role.priviledge-1].forEach(function(value){
                                 if(params[FUNCTION] == value||params[FUNCTION] == "commands"){
                                     access = true;
@@ -164,7 +211,8 @@ bot.on('message', async function (user, userID, channelID, message, evt) {
                     switch(params[FUNCTION]){
                         case PREFIX_RATING:
                             syntax = "--rating {@winner} {@losser}";
-                            if (evt.d.mentions.length == 2) {
+                            if(isAdmin && userID != '420042963624919040'){
+                                if (evt.d.mentions.length == 2) {
                                 var wId = params[1].substring(2,params[1].length-1);
                                 wId = wId.indexOf('!') >= 0 ? wId.substring(1) : wId;
                                 var lId = params[2].substring(2,params[2].length-1);
@@ -218,10 +266,70 @@ bot.on('message', async function (user, userID, channelID, message, evt) {
                                                 message: "Something wrong happend when creating this match history! just in case, the elo's have been reverted, please try again"
                                             });
                                         
-                                    });
+                                        });
                                 });
                                 });
-                            } else notEnoughParametersMessage(syntax,channelID);
+                                } else notEnoughParametersMessage(syntax,channelID);
+                            } else {
+                                if(userID == '420042963624919040'){
+                                    //evt.d.id
+                                    syntax = "--rating {@mention} {<|>} {@mention} {date only xx/yy/zz} {score}";
+                                    if (params.length == 6) {
+                                        var writer = userID;
+                                        var p1 = params[1].substring(2,params[1].length-1);
+                                        p1 = p1.indexOf('!') >= 0 ? p1.substring(1) : p1;
+                                        var p2 = params[3].substring(2,params[3].length-1);
+                                        p2 = p2.indexOf('!') >= 0 ? p2.substring(1) : p2;
+                                        var reacter = writer == p1 ? p2 : writer == p2 ? p1 : '0';
+                                        if(reacter == '0'){
+                                            bot.sendMessage({
+                                                to: channelID,
+                                                message: "you can only create ratings for your own matches"
+                                            });
+                                            return;
+                                        }
+                                        var winner = writer;
+                                        var losser = reacter;
+                                        switch(params[2]){
+                                            case '<':
+                                                winner = p2;
+                                                losser = p1;
+                                            break;
+                                            case '>':
+                                                winner = p1;
+                                                losser = p2;
+                                            break;
+                                        }
+                                        PLAYERS_MODEL.findOne({"discord_id":writer}, function(err1,writer){
+                                        PLAYERS_MODEL.findOne({"discord_id":reacter}, function(err2,reacter){
+                                            if(err1 || err2){ throwErrorMessage(channelID); return;}
+                                            if(!writer || !reacter){ throwExistMessage(channelID, "player", false); return;}
+                                            var coll = {
+                                                writer: writer.discord_id,
+                                                reacter: reacter.discord_id,
+                                                winner: winner,
+                                                losser: losser,
+                                                channel_id: channelID,
+                                                message_id: evt.d.id,
+                                                match_date: params[4],
+                                                score: params[5]
+                                            }
+                                            MATCH_FINISH_MODEL.create(coll, function(err){
+                                                if(!err) {
+                                                    bot.sendMessage({
+                                                        to: channelID,
+                                                        message: "Waiting for reaction to your message"
+                                                    });
+                                                    bot.fetchMessage(evt.d.id);
+                                                }
+                                                else
+                                                    throwErrorMessage(channelID);
+                                            });
+                                        });
+                                        });
+                                    } else notEnoughParametersMessage(syntax,channelID);
+                                }
+                            }
                         break;
                         case PREFIX_REGISTER:
                             syntax = "--register {@mention} {role}";
