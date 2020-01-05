@@ -4,7 +4,7 @@
   "description": "Rank system UCH",
   "main": "URM.js",
   "scripts": {
-    "start": "nodemon bot.js"
+    "start": "node index.js"
   },
   "author": "Satoiji",
   "dependencies": {
@@ -12,6 +12,7 @@
     "child_process": "^1.0.2",
     "discord.io": "https://github.com/woor/discord.io/tarball/gateway_v6",
     "express": "^4.17.1",
+    "express-handlebars": "^3.1.0",
     "jQuery": "^1.7.4",
     "mongoose": "^5.7.11",
     "mysql": "^2.16.0",
