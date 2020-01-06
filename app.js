@@ -2,6 +2,7 @@
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const path = require('path');
 var hbs  = require('express-handlebars');
 const app = express();
 
@@ -18,9 +19,14 @@ app.engine('.hbs', hbs({
 }));
 
 app.set('view engine', '.hbs');
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/user', userApi);
 app.use('/php', ctrlVer);
 app.use('/beats', beatsRoutes);
+
+app.get('/', function(req,res){
+    res.redirect('/beats');
+});
 
 module.exports = app;
