@@ -1,0 +1,16 @@
+<script>
+    $(document).ready(function() {
+        $('.navbar li a').on('click', function(event) {
+            $('.navbar li').removeClass('active').removeAttr('class');
+            $(this).parent().addClass('active');
+        });
+    });
+    function myFunction() {
+        var x = document.getElementById("myTopnav");
+        if (x.className === "topnav") {
+            x.className += " responsive";
+        } else {
+            x.className = "topnav";
+        }
+    }
+</script>

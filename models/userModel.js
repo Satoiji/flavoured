@@ -9,7 +9,7 @@ const UserSchema = mongoose.Schema({
         lowercase: true
     },
     username: String,
-    avatar: String,
+    avatar: {type: String, default: 'https://gravatar.com/avatar/?s=200&d=retro'},
     password: {type: String, select: false},
     signupDate: {type: Date, default: Date.now()},
     lastLogin: Date
@@ -17,7 +17,7 @@ const UserSchema = mongoose.Schema({
 
 UserSchema.pre('save', function(next){
     let user = this;
-    if(!user.isModified('passowrd')) return next();
+    if(!user.isModified('password')) return next();
     bcrypt.genSalt(10, function(err, salt){
         if(err) return next();
         bcrypt.hash(user.password, salt,  null, function(err, hash){
@@ -35,4 +35,4 @@ UserSchema.methods.gravatar = function(){
     return 'https://gravatar.com/avatar/'+md5+'?s=200&d=retro';
 }
 
-module.exports = mongoose.model('User', UserSchema);
+module.exports = mongoose.model('web_user', UserSchema);
