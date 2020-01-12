@@ -5,15 +5,15 @@ mongoose.connect(config.db, { useNewUrlParser: true, useUnifiedTopology: true })
 
 var Discord = require('discord.io');
 var auth = require('./auth.json');
-const USER_MODEL = require('./models/userSchema.js').schema;
-const PLAYERS_MODEL = require('./models/playersSchema.js').schema;
-const COUNTRIES_MODEL = require('./models/countriesSchema.js').schema;
-const PLATFORMS_MODEL = require('./models/platformsSchema.js').schema;
-const ROLES_MODEL = require('./models/rolesSchema.js').schema;
-const MATCHMAKING_MODEL = require('./models/matchmakingSchema.js').schema;
-const MATCHMAKING_HISTORY_MODEL = require('./models/matchmakingHistorySchema.js').schema;
-const DECLARE_MATCHES_MODEL = require('./models/declareMatchesSchema.js').schema;
-const MATCH_FINISH_MODEL = require('./models/matchFinishSchema.js').schema;
+const USER_MODEL = require('./bot_models/userSchema.js').schema;
+const PLAYERS_MODEL = require('./bot_models/playersSchema.js').schema;
+const COUNTRIES_MODEL = require('./bot_models/countriesSchema.js').schema;
+const PLATFORMS_MODEL = require('./bot_models/platformsSchema.js').schema;
+const ROLES_MODEL = require('./bot_models/rolesSchema.js').schema;
+const MATCHMAKING_MODEL = require('./bot_models/matchmakingSchema.js').schema;
+const MATCHMAKING_HISTORY_MODEL = require('./bot_models/matchmakingHistorySchema.js').schema;
+const DECLARE_MATCHES_MODEL = require('./bot_models/declareMatchesSchema.js').schema;
+const MATCH_FINISH_MODEL = require('./bot_models/matchFinishSchema.js').schema;
 
 //var uri = "mongodb://g_herrera:"+auth.mongo+"@flavoured-classics-shard-00-00-dmotk.mongodb.net:27017,flavoured-classics-shard-00-01-dmotk.mongodb.net:27017,flavoured-classics-shard-00-02-dmotk.mongodb.net:27017/test?ssl=true&replicaSet=Flavoured-Classics-shard-0&authSource=admin&retryWrites=true&w=majority";
 const uri = "mongodb+srv://g_herrera:"+auth.mongo+"@flavoured-classics-dmotk.mongodb.net/URM_collection?retryWrites=true&w=majority";
