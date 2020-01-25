@@ -6,8 +6,8 @@ const path = require('path');
 var hbs  = require('express-handlebars');
 const app = express();
 
-const userApi = require('./routes/userRoutes.js');
-const ctrlVer = require('./routes/versionRoutes.js');
+const userApi = require('./bot_information/bot_routes/userRoutes.js');
+const ctrlVer = require('./bot_information/bot_routes/versionRoutes.js');
 const beatsRoutes = require('./routes/beatsRoutes.js');
 
 app.use(bodyParser.urlencoded({extended: false}));

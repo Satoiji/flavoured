@@ -1,6 +1,6 @@
 'use strict'
 
-const userController = require('../controllers/userController.js');
+const userController = require('../bot_controllers/userController.js');
 
 const express = require('express');
 const api = express.Router();

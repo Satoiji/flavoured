@@ -1,0 +1,152 @@
+#content {
+    padding-top: 95px;
+}
+
+@media(min-width:968px){
+    .web-nav{
+        display: flex;
+    }
+
+    .mobile-nav{
+        display:none;
+    }
+
+    .navbar {
+        background-color: white;
+        position: fixed;
+        height: 80px;
+        width: 100%;
+        top: 0;
+        z-index: 25000;
+    }
+    
+    .navbar ul.web-nav{
+        display:flex;
+        list-style: none;
+        text-align: center;
+        vertical-align:top;
+        float: right; 
+        padding-bottom: 15px;
+        max-height: 80px;
+        padding: 15px;
+        align-items: center;
+        min-width: 600px;
+        justify-content: space-around;
+    }
+    
+    .active, .navbar ul.web-nav li:hover{
+        background:linear-gradient(360deg, #fff 50%,#cacaca 100%);;
+        color: lightgray; 
+        text-decoration: none;
+        text-shadow: -1px -1px 0 rgb(230,230,230);
+        box-shadow: 0px -60px 25px rgba(0, 0, 0, 0.5);
+        
+        transition: all 125ms linear;
+    }
+    
+    .navbar li{
+        width:100%;
+        margin-right: 20px;
+        max-height: 78px;
+    }
+    
+    .navbar a {
+        font-size: 18px;
+        opacity: 1 !important;
+        color: black;
+        font-weight: 900;
+        height: 80px;        /* if you want it to take the full height of the bar */
+        line-height: 80px;    /* if you want it vertically middle of the navbar */
+    }
+
+    .main-image-text{
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0, 0.4); /* Black w/opacity/see-through */
+        color: white;
+        font-weight: bold;
+        border: 3px solid #f1f1f1;
+        position: absolute;
+        top: 58%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 2;
+        width: 80%;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .image-blur{
+        filter: blur(8px);
+    }
+}
+
+@media(max-width: 968px){
+    .web-nav{
+        display: none;
+    }
+
+    .navbar li{
+        width:100%;
+        margin-right: 20px;
+        max-height: 78px;
+    }
+
+    .navbar {
+        background-color: white;
+        position: fixed;
+        height: 80px;
+        width: 100%;
+        top: 0;
+        z-index: 25000;
+    }
+    
+    .navbar ul.mobile-nav{
+        display:flex;
+        list-style: none;
+        text-align: center;
+        vertical-align:top;
+        float: right; 
+    }
+
+    .navbar li{
+        width:100%;
+        margin-right: 40px;
+        max-height: 78px;
+    }
+    
+    .navbar a {
+        font-size: 30px;
+        color: black;
+        font-weight: 900;
+        height: 80px;
+        line-height: 80px;
+    }
+
+    .main-image-text{
+        background-color: rgb(0,0,0);
+        color: white;
+        font-weight: bold;
+        border: 3px solid #f1f1f1;
+        z-index: 2;
+        padding: 20px;
+        text-align: center;
+    }
+}
+
+.logo {
+    font-weight: 900;
+    display: inline-block;
+    vertical-align: top;
+    max-height: 79px;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 20px;
+}
+
+.main-image{
+    max-height: 560px;
+
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}

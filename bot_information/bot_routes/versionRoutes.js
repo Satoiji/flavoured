@@ -1,6 +1,6 @@
 'use strict'
 
-const controller = require('../controllers/vController.js');
+const controller = require('../bot_controllers/vController.js');
 
 const express = require('express');
 const api = express.Router();
