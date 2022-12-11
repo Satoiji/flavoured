@@ -13,7 +13,7 @@
     "child_process": "^1.0.2",
     "crypto": "^1.0.1",
     "discord.io": "https://github.com/woor/discord.io/tarball/gateway_v6",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-handlebars": "^3.1.0",
     "jQuery": "^1.7.4",
     "jwt-simple": "^0.5.6",
